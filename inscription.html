@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Pokémon TCGP</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial Black', sans-serif;
+            overflow: hidden;
+            padding: 20px;
+        }
+        .background-jeux {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url("background.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 1;
+            z-index: -2;
+            pointer-events: none;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 203, 5, 0.5);
+            text-align: center;
+            width: 400px;
+            max-width: 100%;
+            position: relative;
+            animation: fadeIn 1s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h2 {
+            color: #ffcb05;
+            font-size: 2.5em;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #ffcb05;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #ffd700;
+            font-size: 1em;
+            margin-bottom: 25px;
+            font-weight: normal;
+        }
+        input, select {
+            display: block;
+            width: 90%;
+            margin: 15px auto;
+            padding: 12px;
+            border: 2px solid #ffcb05;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        select {
+            cursor: pointer;
+        }
+        select option {
+            background: #1a1a1a;
+            color: #fff;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px #ffd700;
+        }
+        button {
+            width: 90%;
+            padding: 12px;
+            margin-top: 20px;
+            background: linear-gradient(45deg, #ffcb05, #ffd700);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #ffd700;
+        }
+        .link-container {
+            margin-top: 20px;
+            color: #fff;
+        }
+        a {
+            color: #ffcb05;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: color 0.3s ease;
+        }
+        a:hover { 
+            color: #ffd700; 
+        }
+    </style>
+</head>
+<body>
+    <div class="background-jeux"></div>
+    <div class="container">
+        <h2>Maximus TCGP</h2>
+        <p class="subtitle">Créer un compte</p>
+        <form id="inscriptionForm">
+            <input type="text" id="nom" placeholder="Nom" required>
+            <input type="text" id="prenom" placeholder="Prénom" required>
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="number" id="age" placeholder="Âge" min="1" max="120" required>
+            <select id="genre" required>
+                <option value="" disabled selected>Genre</option>
+                <option value="homme">Homme</option>
+                <option value="femme">Femme</option>
+                <option value="autre">Autre</option>
+            </select>
+            <select id="pays" required>
+                <option value="" disabled selected>Pays</option>
+                <option value="france">France</option>
+                <option value="belgique">Belgique</option>
+                <option value="suisse">Suisse</option>
+                <option value="canada">Canada</option>
+                <option value="autre">Autre</option>
+            </select>
+            <input type="password" id="password" placeholder="Mot de passe" required>
+            <input type="password" id="confirmPassword" placeholder="Confirmer le mot de passe" required>
+            <button type="submit">S'inscrire</button>
+        </form>
+        <div class="link-container">
+            <p>Déjà un compte ? <a href="connexion.html">Se connecter</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('inscriptionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                alert('Les mots de passe ne correspondent pas !');
+                return;
+            }
+            
+            const formData = {
+                nom: document.getElementById('nom').value,
+                prenom: document.getElementById('prenom').value,
+                email: document.getElementById('email').value,
+                age: document.getElementById('age').value,
+                genre: document.getElementById('genre').value,
+                pays: document.getElementById('pays').value
+            };
+            
+            console.log('Données d\'inscription:', formData);
+            alert('Inscription réussie ! Bienvenue dans Maximus TCGP !');
+        });
+    </script>
+</body>
+</html>
