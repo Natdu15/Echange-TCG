@@ -1,3 +1,6 @@
+// js/utils.js
+
+// Hash SHA-256 en hex
 async function sha256Hex(str) {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
     return Array.from(new Uint8Array(buf))
@@ -5,6 +8,7 @@ async function sha256Hex(str) {
         .join('');
 }
 
+// Génère un salt aléatoire en hex
 function generateSalt(length = 16) {
     const array = new Uint8Array(length);
     crypto.getRandomValues(array);
