@@ -119,6 +119,51 @@ document.querySelector("form").addEventListener("submit", function(event) {
     } else {
         alert('❌ Identifiants incorrects. Vérifie ton email ou ton mot de passe.');
     }
+    /* utilitaire SHA-256 Web Crypto -> renvoie hex string */
+async function sha256Hex(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/* Fonction de connexion */
+document.getElementById('loginForm')?.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const password = document.getElementById('password').value;
+
+  try {
+    // 1) Charger users.json
+    const res = await fetch('/users.json');
+    if (!res.ok) throw new Error('Impossible de charger users.json');
+    const users = await res.json();
+
+    // 2) Rechercher l'utilisateur par email
+    const user = users.find(u => u.email.toLowerCase() === email);
+    if (!user) {
+      alert('Email ou mot de passe incorrect.');
+      return;
+    }
+
+    // 3) Calculer hash côté client : SHA-256(salt + password)
+    const candidateHash = await sha256Hex(user.salt + password);
+
+    // 4) Comparer
+    if (candidateHash === user.passwordHash) {
+      // Auth OK -> créer token simple et stocker le profil coté client
+      const token = crypto.getRandomValues(new Uint32Array(4)).join('-');
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('connectedUser', JSON.stringify({
+        email: user.email, nom: user.nom, prenom: user.prenom
+      }));
+      // redirection
+      window.location.href = 'accueil.html';
+    } else {
+      alert('Email ou mot de passe incorrect.');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Erreur lors de la connexion.');
+  }
 });
 </script>
 
