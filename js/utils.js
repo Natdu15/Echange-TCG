@@ -1,10 +1,3 @@
-// 🔹 Fonctions utilitaires communes
-
-/**
- * SHA-256 en hexadécimal
- * @param {string} str 
- * @returns {Promise<string>}
- */
 async function sha256Hex(str) {
     const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
     return Array.from(new Uint8Array(buf))
