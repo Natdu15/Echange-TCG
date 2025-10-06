@@ -84,32 +84,15 @@
             font-size: 0.9em;
             transition: color 0.3s ease;
         }
-        a:hover { color: #ffd700; }
-        .glow {
-            position: absolute;
-            top: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle, rgba(255, 203, 5, 0.5), transparent);
-            animation: pulse 2s infinite;
+        a:hover { 
+            color: #ffd700; 
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.2); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 0.5; }
 
     </style>
 </head>
 <body>
     <div class="background-jeux"></div>
     <div class="container">
-        <div class="glow"></div>
         <h2>Maximus TCGP</h2>
         <form>
             <input type="email" placeholder="Email" required>
