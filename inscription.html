@@ -125,12 +125,11 @@
             <input type="text" id="nom" placeholder="Nom" required>
             <input type="text" id="prenom" placeholder="Prénom" required>
             <input type="email" id="email" placeholder="Email" required>
-            <input type="number" id="age" placeholder="Âge" min="1" max="120" required>
+            <input type="number" id="age" placeholder="Âge" min="5" max="100" required>
             <select id="genre" required>
                 <option value="" disabled selected>Genre</option>
                 <option value="homme">Homme</option>
                 <option value="femme">Femme</option>
-                <option value="autre">Autre</option>
             </select>
             <select id="pays" required>
                 <option value="" disabled selected>Pays</option>
@@ -145,10 +144,9 @@
             <button type="submit">S'inscrire</button>
         </form>
         <div class="link-container">
-            <p>Déjà un compte ? <a href="connexion.html">Se connecter</a></p>
+            <p>Déjà un compte ? <a href="index.html">Se connecter</a></p>
         </div>
     </div>
-
     <script>
         document.getElementById('inscriptionForm').addEventListener('submit', function(e) {
             e.preventDefault();
