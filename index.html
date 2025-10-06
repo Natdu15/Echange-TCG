@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -7,13 +8,26 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: 'Arial Black', sans-serif;
             overflow: hidden;
+        }
+        .background-jeux {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-image: url("background.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 1;
+            z-index: -2;
+            pointer-events: none;
         }
         .container {
             background: rgba(0, 0, 0, 0.85);
@@ -71,78 +85,23 @@
             font-size: 0.9em;
             transition: color 0.3s ease;
         }
-        a:hover { color: #ffd700; }
-        .glow {
-            position: absolute;
-            top: -50px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 100px;
-            background: radial-gradient(circle, rgba(255, 203, 5, 0.5), transparent);
-            animation: pulse 2s infinite;
+        a:hover { 
+            color: #ffd700; 
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.2); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 0.5; }
-        }
-        canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: -1;
-        }
+
     </style>
 </head>
 <body>
-    <canvas id="bgCanvas"></canvas>
+    <div class="background-jeux"></div>
     <div class="container">
-        <div class="glow"></div>
-        <h2>Pokémon TCGP</h2>
+        <h2>Maximus TCGP</h2>
         <form>
             <input type="email" placeholder="Email" required>
             <input type="password" placeholder="Mot de passe" required>
             <button type="submit">Se connecter</button>
         </form>
-        <p>Pas de compte ? <a href="#">S'inscrire</a></p>
+        <p>Pas de compte ? <a href="inscription.html">S'inscrire</a></p>
     </div>
-    <script>
-        const canvas = document.getElementById('bgCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const particles = [];
-        for (let i = 0; i < 50; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 3 + 1,
-                speedX: (Math.random() - 0.5) * 2,
-                speedY: (Math.random() - 0.5) * 2
-            });
-        }
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => {
-                p.x += p.speedX;
-                p.y += p.speedY;
-                if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(255, 203, 5, 0.7)';
-                ctx.fill();
-            });
-            requestAnimationFrame(animate);
-        }
-        animate();
-    </script>
+ 
 </body>
 </html>
