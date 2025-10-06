@@ -4,11 +4,14 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
     const password = document.getElementById('password').value;
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     const user = users.find(u => u.email === email);
+    
     if (!user) {
         alert("❌ Email ou mot de passe incorrect.");
         return;
     }
+    
     const candidateHash = await sha256Hex(user.salt + password);
+    
     if (candidateHash === user.passwordHash) {
         const token = crypto.getRandomValues(new Uint32Array(4)).join('-');
         localStorage.setItem("authToken", token);
@@ -16,9 +19,11 @@ document.getElementById('loginForm')?.addEventListener('submit', async function(
             email: user.email,
             username: user.username
         }));
+        
         alert(`✅ Connexion réussie ! Bienvenue, ${user.username} !`);
         window.location.href = "accueil.html";
-    } else {
+    } 
+    else {
         alert("❌ Email ou mot de passe incorrect.");
     }
 });
