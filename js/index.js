@@ -1,64 +1,44 @@
 /* ================================================
-   FICHIER : js/index.js
-   Rôle : Gérer la connexion utilisateur
+   Connexion utilisateur
    ================================================ */
 
-/**
- * Calcule le hash SHA-256 en hexadécimal
- * @param {string} str - Chaîne à hasher
- * @returns {Promise<string>} hash hexadécimal
- */
-async function sha256Hex(str) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-    return Array.from(new Uint8Array(buf))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
-}
-
-/**
- * Événement de soumission du formulaire de connexion
- */
-document.querySelector("form")?.addEventListener("submit", async function(event) {
+document.querySelector("form")?.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     const email = document.querySelector('input[type="email"]').value.trim().toLowerCase();
     const password = document.querySelector('input[type="password"]').value;
 
     try {
-        // Charger la base des utilisateurs (users.json)
-        const res = await fetch("users.json");
-        if (!res.ok) throw new Error("Impossible de charger users.json");
+        // Récupération des utilisateurs stockés localement
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
 
-        const users = await res.json();
-
-        // Recherche de l'utilisateur par email
-        const user = users.find(u => u.email.toLowerCase() === email);
+        // Recherche utilisateur
+        const user = users.find(u => u.email === email);
         if (!user) {
-            alert("❌ Identifiants incorrects. Vérifie ton email ou ton mot de passe.");
+            alert("❌ Email ou mot de passe incorrect.");
             return;
         }
 
-        // Calcul du hash pour comparaison : SHA-256(salt + password)
+        // Calcul hash pour comparaison
         const candidateHash = await sha256Hex(user.salt + password);
 
         if (candidateHash === user.passwordHash) {
-            // ✅ Connexion réussie
+            // Connexion réussie
             const token = crypto.getRandomValues(new Uint32Array(4)).join('-');
-
             localStorage.setItem("authToken", token);
             localStorage.setItem("connectedUser", JSON.stringify({
                 email: user.email,
-                prenom: user.prenom,
-                nom: user.nom
+                username: user.username
             }));
 
-            alert("✅ Connexion réussie ! Bienvenue, " + user.prenom + " 👋");
+            alert(`✅ Connexion réussie ! Bienvenue, ${user.username} !`);
             window.location.href = "accueil.html";
         } else {
-            alert("❌ Identifiants incorrects. Vérifie ton email ou ton mot de passe.");
+            alert("❌ Email ou mot de passe incorrect.");
         }
+
     } catch (err) {
         console.error("Erreur de connexion :", err);
-        alert("⚠️ Erreur lors de la connexion. Vérifie ta connexion internet ou réessaie plus tard.");
+        alert("⚠️ Une erreur est survenue lors de la connexion.");
     }
 });
