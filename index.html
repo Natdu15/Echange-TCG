@@ -1,171 +1,23 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion Pokémon TCGP</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Arial Black', sans-serif;
-            overflow: hidden;
-        }
-        .background-jeux {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-image: url("background.jpg");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            opacity: 1;
-            z-index: -2;
-            pointer-events: none;
-        }
-        .container {
-            background: rgba(0, 0, 0, 0.85);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 0 20px rgba(255, 203, 5, 0.5);
-            text-align: center;
-            width: 350px;
-            position: relative;
-            animation: fadeIn 1s ease-in;
-        }
-        h2 {
-            color: #ffcb05;
-            font-size: 2.5em;
-            text-transform: uppercase;
-            text-shadow: 0 0 10px #ffcb05;
-            margin-bottom: 20px;
-        }
-        input {
-            display: block;
-            width: 90%;
-            margin: 15px auto;
-            padding: 12px;
-            border: 2px solid #ffcb05;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            font-size: 1.1em;
-            transition: all 0.3s ease;
-        }
-        input:focus {
-            outline: none;
-            border-color: #ffd700;
-            box-shadow: 0 0 10px #ffd700;
-        }
-        button {
-            width: 90%;
-            padding: 12px;
-            background: linear-gradient(45deg, #ffcb05, #ffd700);
-            border: none;
-            border-radius: 8px;
-            color: #000;
-            font-size: 1.2em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 15px #ffd700;
-        }
-        a {
-            color: #ffcb05;
-            text-decoration: none;
-            font-size: 0.9em;
-            transition: color 0.3s ease;
-        }
-        a:hover { 
-            color: #ffd700; 
-        }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion Pokémon TCGP</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="background-jeux"></div>
-    <div class="container">
-        <h2>Maximus TCGP</h2>
-        <form>
-            <input type="email" placeholder="Email" required>
-            <input type="password" placeholder="Mot de passe" required>
-            <button type="submit">Se connecter</button>
-        </form>
-        <p>Pas de compte ? <a href="inscription.html">S'inscrire</a></p>
-    </div>
-<script>
-document.querySelector("form").addEventListener("submit", function(event) {
-    event.preventDefault();
-    
-    const email = document.querySelector('input[type="email"]').value.trim();
-    const password = document.querySelector('input[type="password"]').value;
-
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-
-    const foundUser = users.find(user => user.email === email && user.password === password);
-
-    if (foundUser) {
-        alert('✅ Connexion réussie ! Bienvenue, ' + foundUser.prenom + ' !');
-        window.location.href = "accueil.html";
-    } else {
-        alert('❌ Identifiants incorrects. Vérifie ton email ou ton mot de passe.');
-    }
-    /* utilitaire SHA-256 Web Crypto -> renvoie hex string */
-async function sha256Hex(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-/* Fonction de connexion */
-document.getElementById('loginForm')?.addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const email = document.getElementById('email').value.trim().toLowerCase();
-  const password = document.getElementById('password').value;
-
-  try {
-    // 1) Charger users.json
-    const res = await fetch('/users.json');
-    if (!res.ok) throw new Error('Impossible de charger users.json');
-    const users = await res.json();
-
-    // 2) Rechercher l'utilisateur par email
-    const user = users.find(u => u.email.toLowerCase() === email);
-    if (!user) {
-      alert('Email ou mot de passe incorrect.');
-      return;
-    }
-
-    // 3) Calculer hash côté client : SHA-256(salt + password)
-    const candidateHash = await sha256Hex(user.salt + password);
-
-    // 4) Comparer
-    if (candidateHash === user.passwordHash) {
-      // Auth OK -> créer token simple et stocker le profil coté client
-      const token = crypto.getRandomValues(new Uint32Array(4)).join('-');
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('connectedUser', JSON.stringify({
-        email: user.email, nom: user.nom, prenom: user.prenom
-      }));
-      // redirection
-      window.location.href = 'accueil.html';
-    } else {
-      alert('Email ou mot de passe incorrect.');
-    }
-  } catch (err) {
-    console.error(err);
-    alert('Erreur lors de la connexion.');
-  }
-});
-</script>
-
+  <div class="background-jeux"></div>
+  <div class="container">
+    <h2>Connexion à Maximus TCGP</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Mot de passe" required>
+      <button type="submit">Se connecter</button>
+    </form>
+    <p>Pas encore de compte ? <a href="inscription.html">Créer un compte</a></p>
+  </div>
+      <script src="js/utils.js"></script>
+      <script src="js/login.js"></script>
 </body>
 </html>
