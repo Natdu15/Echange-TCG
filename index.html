@@ -102,10 +102,23 @@
         </form>
         <p>Pas de compte ? <a href="inscription.html">S'inscrire</a></p>
     </div>
- <script>
+<script>
 document.querySelector("form").addEventListener("submit", function(event) {
-    event.preventDefault(); 
-    window.location.href = "accueil.html";
+    event.preventDefault();
+    
+    const email = document.querySelector('input[type="email"]').value.trim();
+    const password = document.querySelector('input[type="password"]').value;
+
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+
+    const foundUser = users.find(user => user.email === email && user.password === password);
+
+    if (foundUser) {
+        alert('✅ Connexion réussie ! Bienvenue, ' + foundUser.prenom + ' !');
+        window.location.href = "accueil.html";
+    } else {
+        alert('❌ Identifiants incorrects. Vérifie ton email ou ton mot de passe.');
+    }
 });
 </script>
 
