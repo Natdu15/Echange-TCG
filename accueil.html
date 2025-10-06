@@ -1,0 +1,19 @@
+<script>(function() {
+  const token = localStorage.getItem('authToken');
+  if (!token) {
+    // pas connecté -> redirection vers connexion
+    window.location.href = 'index.html';
+    return;
+  }
+  // Optionnel : afficher le nom
+  const user = JSON.parse(localStorage.getItem('connectedUser') || '{}');
+  if (user && user.prenom) {
+    // Insère un message de bienvenue dans le header
+    document.addEventListener('DOMContentLoaded', () => {
+      const h = document.createElement('div');
+      h.innerHTML = `<p>Bienvenue, ${user.prenom} ${user.nom}.</p>`;
+      document.body.prepend(h);
+    });
+  }
+})();
+  </script>
