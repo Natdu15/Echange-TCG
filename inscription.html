@@ -148,29 +148,38 @@
         </div>
     </div>
     <script>
-        document.getElementById('inscriptionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const password = document.getElementById('password').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            if (password !== confirmPassword) {
-                alert('Les mots de passe ne correspondent pas !');
-                return;
-            }
-            
-            const formData = {
-                nom: document.getElementById('nom').value,
-                prenom: document.getElementById('prenom').value,
-                email: document.getElementById('email').value,
-                age: document.getElementById('age').value,
-                genre: document.getElementById('genre').value,
-                pays: document.getElementById('pays').value
-            };
-            
-            console.log('Données d\'inscription:', formData);
-            alert('Inscription réussie ! Bienvenue dans Maximus TCGP !');
-        });
-    </script>
+document.getElementById('inscriptionForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const nom = document.getElementById('nom').value.trim();
+    const prenom = document.getElementById('prenom').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const age = document.getElementById('age').value.trim();
+    const genre = document.getElementById('genre').value;
+    const pays = document.getElementById('pays').value;
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (password !== confirmPassword) {
+        alert('❌ Les mots de passe ne correspondent pas !');
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+
+    if (users.some(user => user.email === email)) {
+        alert('⚠️ Cet email est déjà utilisé !');
+        return;
+    }
+
+    const newUser = { nom, prenom, email, age, genre, pays, password };
+    users.push(newUser);
+
+    localStorage.setItem('users', JSON.stringify(users));
+
+    alert('✅ Inscription réussie ! Bienvenue dans Maximus TCGP, ' + prenom + ' !');
+    window.location.href = "index.html";
+});
+</script>
 </body>
 </html>
