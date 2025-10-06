@@ -180,6 +180,38 @@ document.getElementById('inscriptionForm').addEventListener('submit', function(e
     alert('✅ Inscription réussie ! Bienvenue dans Maximus TCGP, ' + prenom + ' !');
     window.location.href = "accueil.html";
 });
+    async function sha256Hex(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+document.getElementById('inscriptionForm')?.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  // récupère les champs...
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const nom = document.getElementById('nom').value.trim();
+  const prenom = document.getElementById('prenom').value.trim();
+  const age = parseInt(document.getElementById('age').value, 10);
+  const genre = document.getElementById('genre').value;
+  const pays = document.getElementById('pays').value;
+  const password = document.getElementById('password').value;
+  const confirm = document.getElementById('confirmPassword').value;
+
+  if (password !== confirm) return alert('Les mots de passe ne correspondent pas.');
+
+  // créer salt simple (pour prototype client)
+  const salt = Array.from(crypto.getRandomValues(new Uint8Array(8))).map(n => n.toString(16).padStart(2,'0')).join('');
+  const passwordHash = await sha256Hex(salt + password);
+
+  // stoquer dans localStorage sous 'localUsers' (ne touche pas users.json)
+  const localUsers = JSON.parse(localStorage.getItem('localUsers') || '[]');
+  if (localUsers.find(u => u.email === email)) return alert('Email déjà utilisé (local).');
+
+  localUsers.push({ email, nom, prenom, age, genre, pays, salt, passwordHash });
+  localStorage.setItem('localUsers', JSON.stringify(localUsers));
+  alert('Inscription locale réussie. Tu peux te connecter.');
+  window.location.href = 'index.html';
+});
 </script>
 </body>
 </html>
