@@ -4,12 +4,6 @@ async function sha256Hex(str) {
         .map(b => b.toString(16).padStart(2, '0'))
         .join('');
 }
-
-/**
- * Génère un salt aléatoire
- * @param {number} length 
- * @returns {string}
- */
 function generateSalt(length = 16) {
     const array = new Uint8Array(length);
     crypto.getRandomValues(array);
