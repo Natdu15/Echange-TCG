@@ -2,25 +2,147 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion Pokémon TCGP</title>
     <style>
-        body { background: #000 url('gaming-bg.jpg') no-repeat center/cover; color: #fff; font-family: Arial; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: rgba(0,0,0,0.7); padding: 40px; border-radius: 10px; text-align: center; width: 300px; }
-        input { display: block; margin: 10px auto; padding: 10px; width: 80%; border: 1px solid #ffcb05; border-radius: 5px; background: #333; color: #fff; }
-        button { background: #ffcb05; color: #000; padding: 10px; border: none; border-radius: 5px; cursor: pointer; width: 80%; }
-        button:hover { background: #ffd700; }
-        a { color: #ffcb05; text-decoration: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: url('https://images.unsplash.com/photo-1618383498047-2d3e7d39f0f3') no-repeat center/cover;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial Black', sans-serif;
+            overflow: hidden;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.85);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 203, 5, 0.5);
+            text-align: center;
+            width: 350px;
+            position: relative;
+            animation: fadeIn 1s ease-in;
+        }
+        h2 {
+            color: #ffcb05;
+            font-size: 2.5em;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #ffcb05;
+            margin-bottom: 20px;
+        }
+        input {
+            display: block;
+            width: 90%;
+            margin: 15px auto;
+            padding: 12px;
+            border: 2px solid #ffcb05;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+        }
+        input:focus {
+            outline: none;
+            border-color: #ffd700;
+            box-shadow: 0 0 10px #ffd700;
+        }
+        button {
+            width: 90%;
+            padding: 12px;
+            background: linear-gradient(45deg, #ffcb05, #ffd700);
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #ffd700;
+        }
+        a {
+            color: #ffcb05;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: color 0.3s ease;
+        }
+        a:hover { color: #ffd700; }
+        .glow {
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255, 203, 5, 0.5), transparent);
+            animation: pulse 2s infinite;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
     </style>
 </head>
 <body>
+    <canvas id="bgCanvas"></canvas>
     <div class="container">
-        <h2>Connexion / Inscription</h2>
+        <div class="glow"></div>
+        <h2>Pokémon TCGP</h2>
         <form>
             <input type="email" placeholder="Email" required>
             <input type="password" placeholder="Mot de passe" required>
             <button type="submit">Se connecter</button>
         </form>
-        <p>Pas de compte? <a href="#">S'inscrire</a></p>
+        <p>Pas de compte ? <a href="#">S'inscrire</a></p>
     </div>
+    <script>
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        for (let i = 0; i < 50; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 3 + 1,
+                speedX: (Math.random() - 0.5) * 2,
+                speedY: (Math.random() - 0.5) * 2
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+                if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 203, 5, 0.7)';
+                ctx.fill();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
 </body>
 </html>
