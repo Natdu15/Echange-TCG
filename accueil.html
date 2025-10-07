@@ -1,4 +1,1017 @@
-<script>(function() {
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCG Arena - Accueil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 1s ease;
+        }
+
+        body.legendary-bg {
+            background: linear-gradient(to bottom right, #78350f, #000, #7c2d12);
+        }
+
+        body.epic-bg {
+            background: linear-gradient(to bottom right, #581c87, #000, #312e81);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(to right, #1f2937, #000);
+            border-bottom: 2px solid #374151;
+            padding: 1rem;
+        }
+
+        .header-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, #22d3ee, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .profile-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(to right, #9333ea, #ec4899);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .profile-btn:hover {
+            background: linear-gradient(to right, #a855f7, #f472b6);
+            box-shadow: 0 0 20px rgba(147, 51, 234, 0.5);
+        }
+
+        .profile-avatar {
+            font-size: 1.5rem;
+        }
+
+        .profile-info {
+            text-align: left;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .profile-stats {
+            font-size: 0.75rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .gems {
+            color: #fbbf24;
+        }
+
+        /* Dropdown Profil */
+        .profile-dropdown {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 0.5rem;
+            width: 300px;
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        .profile-dropdown.active {
+            display: block;
+        }
+
+        .profile-dropdown-header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .profile-dropdown-avatar {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-dropdown-badges {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-size: 0.85rem;
+        }
+
+        .badge-level {
+            background: #2563eb;
+        }
+
+        .badge-gems {
+            background: #ca8a04;
+        }
+
+        .favorite-cards {
+            border-top: 1px solid #374151;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+
+        .favorite-cards h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-item {
+            background: #111827;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .booster-section {
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .booster-title {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #06b6d4, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .booster-container {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .booster-pack {
+            width: 200px;
+            height: 280px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+            border: 3px solid #a78bfa;
+        }
+
+        .booster-pack:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 15px 50px rgba(139, 92, 246, 0.6);
+        }
+
+        .booster-pack.opening {
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg); }
+            75% { transform: rotate(5deg); }
+        }
+
+        .booster-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .booster-name {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .booster-info {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .free-boosters {
+            background: #10b981;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+        }
+
+        .timer {
+            background: #ef4444;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .booster-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(to right, #059669, #047857);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(to right, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(to right, #d97706, #b45309);
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Cards Display */
+        .cards-reveal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .cards-reveal.active {
+            display: flex;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .card {
+            width: 100%;
+            height: 220px;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            animation: cardReveal 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes cardReveal {
+            from {
+                opacity: 0;
+                transform: scale(0.5) rotateY(180deg);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) rotateY(0deg);
+            }
+        }
+
+        .card.common {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            border: 2px solid #9ca3af;
+        }
+
+        .card.rare {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border: 2px solid #60a5fa;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .card.epic {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            border: 2px solid #c084fc;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.7);
+        }
+
+        .card.legendary {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border: 2px solid #fcd34d;
+            box-shadow: 0 0 40px rgba(251, 191, 36, 0.9);
+            animation: cardReveal 0.5s ease, legendary-glow 2s infinite;
+        }
+
+        @keyframes legendary-glow {
+            0%, 100% { box-shadow: 0 0 40px rgba(251, 191, 36, 0.9); }
+            50% { box-shadow: 0 0 60px rgba(251, 191, 36, 1); }
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-name {
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-rarity {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .close-cards {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .close-cards:hover {
+            background: #dc2626;
+        }
+
+        /* Quests Button */
+        .quests-btn {
+            position: fixed;
+            bottom: 90px;
+            right: 1rem;
+            background: linear-gradient(to right, #eab308, #ca8a04);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(234, 179, 8, 0.5);
+            transition: all 0.3s;
+            z-index: 50;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .quests-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 30px rgba(234, 179, 8, 0.7);
+        }
+
+        /* Quests Panel */
+        .quests-panel {
+            position: fixed;
+            bottom: 90px;
+            right: 1rem;
+            width: 350px;
+            max-width: calc(100vw - 2rem);
+            background: #1f2937;
+            border: 2px solid #374151;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .quests-panel.active {
+            display: block;
+        }
+
+        .quests-header {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #fbbf24;
+        }
+
+        .quest-item {
+            background: #111827;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            border: 2px solid #374151;
+        }
+
+        .quest-item.completed {
+            border-color: #10b981;
+        }
+
+        .quest-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .quest-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #374151;
+            border-radius: 1rem;
+            overflow: hidden;
+            margin: 0 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #10b981, #059669);
+            transition: width 0.3s;
+        }
+
+        .quest-reward {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .claim-btn {
+            width: 100%;
+            padding: 0.5rem;
+            background: linear-gradient(to right, #10b981, #059669);
+            border: none;
+            border-radius: 0.25rem;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .claim-btn:hover {
+            background: linear-gradient(to right, #059669, #047857);
+        }
+
+        .claim-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: #1f2937;
+            border-top: 2px solid #374151;
+            padding: 0.75rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .nav-items {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            max-width: 120px;
+        }
+
+        .nav-item:hover {
+            background: #374151;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(to right, #6366f1, #8b5cf6);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 1.25rem;
+            }
+
+            .profile-info {
+                display: none;
+            }
+
+            .booster-title {
+                font-size: 1.5rem;
+            }
+
+            .booster-pack {
+                width: 160px;
+                height: 240px;
+            }
+
+            .cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+
+            .card {
+                height: 180px;
+            }
+
+            .nav-label {
+                font-size: 0.65rem;
+            }
+
+            .quests-btn {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">⚔️ TCG ARENA</div>
+            <button class="profile-btn" id="profileBtn">
+                <span class="profile-avatar">🎮</span>
+                <div class="profile-info">
+                    <div class="profile-name" id="profileName">Player123</div>
+                    <div class="profile-stats">
+                        <span>Niv. <span id="playerLevel">15</span></span>
+                        <span class="gems">💎 <span id="playerGems">250</span></span>
+                    </div>
+                </div>
+                <i class="fas fa-user"></i>
+                
+                <!-- Profile Dropdown -->
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-dropdown-header">
+                        <div class="profile-dropdown-avatar">🎮</div>
+                        <h3 id="dropdownName">Player123</h3>
+                        <div class="profile-dropdown-badges">
+                            <span class="badge badge-level">Niv. <span id="dropdownLevel">15</span></span>
+                            <span class="badge badge-gems">💎 <span id="dropdownGems">250</span></span>
+                        </div>
+                    </div>
+                    <div class="favorite-cards">
+                        <h4><i class="fas fa-star" style="color: #fbbf24;"></i> Cartes préférées</h4>
+                        <div class="card-item">🃏 Dragon Noir</div>
+                        <div class="card-item">🃏 Mage de Feu</div>
+                        <div class="card-item">🃏 Chevalier Sacré</div>
+                    </div>
+                </div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="booster-section">
+            <h2 class="booster-title">📦 Ouvre tes Boosters !</h2>
+            
+            <div class="booster-container">
+                <div class="booster-pack" id="boosterPack">
+                    <div class="booster-icon">📦</div>
+                    <div class="booster-name">Extension Basique</div>
+                </div>
+            </div>
+
+            <div class="booster-info">
+                <div class="free-boosters">
+                    <i class="fas fa-gift"></i> <span id="freeBoosters">2</span>/2 Gratuits
+                </div>
+                <div class="timer" id="timerDisplay">
+                    <i class="fas fa-clock"></i>
+                    <span id="timerText">12h 00m 00s</span>
+                </div>
+            </div>
+
+            <div class="booster-actions">
+                <button class="btn btn-primary" id="openFreeBtn">
+                    <i class="fas fa-gift"></i> Ouvrir (Gratuit)
+                </button>
+                <button class="btn btn-secondary" id="openPaidBtn">
+                    <i class="fas fa-gem"></i> x10 (100 Gems)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cards Reveal -->
+    <div class="cards-reveal" id="cardsReveal">
+        <button class="close-cards" id="closeCards">
+            <i class="fas fa-times"></i> Fermer
+        </button>
+        <div class="cards-grid" id="cardsGrid"></div>
+    </div>
+
+    <!-- Quests Button -->
+    <button class="quests-btn" id="questsBtn">
+        <i class="fas fa-trophy"></i>
+    </button>
+
+    <!-- Quests Panel -->
+    <div class="quests-panel" id="questsPanel">
+        <div class="quests-header">
+            <i class="fas fa-trophy"></i> Quêtes Quotidiennes
+        </div>
+        <div id="questsList"></div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-items">
+            <div class="nav-item active" data-tab="home">
+                <i class="nav-icon fas fa-home"></i>
+                <span class="nav-label">Accueil</span>
+            </div>
+            <div class="nav-item" data-tab="inventory">
+                <i class="nav-icon fas fa-box"></i>
+                <span class="nav-label">Inventaire</span>
+            </div>
+            <div class="nav-item" data-tab="trades">
+                <i class="nav-icon fas fa-exchange-alt"></i>
+                <span class="nav-label">Échanges</span>
+            </div>
+            <div class="nav-item" data-tab="battles">
+                <i class="nav-icon fas fa-swords"></i>
+                <span class="nav-label">Combats</span>
+            </div>
+            <div class="nav-item" data-tab="settings">
+                <i class="nav-icon fas fa-cog"></i>
+                <span class="nav-label">Paramètres</span>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        // État du jeu
+        let gameState = {
+            pseudo: 'Player123',
+            level: 15,
+            gems: 250,
+            avatar: '🎮',
+            freeBoostersLeft: 2,
+            timeUntilNextBooster: 12 * 60 * 60, // 12h en secondes
+            quests: [
+                { id: 1, title: 'Connexion au jeu', reward: 50, completed: true, progress: 1, max: 1 },
+                { id: 2, title: 'Ouvrir un booster', reward: 100, completed: false, progress: 0, max: 1 },
+                { id: 3, title: 'Ouvrir 2 boosters', reward: 200, completed: false, progress: 0, max: 2 },
+                { id: 4, title: 'Faire un combat', reward: 150, completed: false, progress: 0, max: 1 }
+            ]
+        };
+
+        // Éléments DOM
+        const profileBtn = document.getElementById('profileBtn');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const boosterPack = document.getElementById('boosterPack');
+        const openFreeBtn = document.getElementById('openFreeBtn');
+        const openPaidBtn = document.getElementById('openPaidBtn');
+        const cardsReveal = document.getElementById('cardsReveal');
+        const cardsGrid = document.getElementById('cardsGrid');
+        const closeCards = document.getElementById('closeCards');
+        const questsBtn = document.getElementById('questsBtn');
+        const questsPanel = document.getElementById('questsPanel');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        // Timer
+        function formatTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            return `${hours}h ${String(minutes).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+        }
+
+        function updateTimer() {
+            if (gameState.timeUntilNextBooster > 0) {
+                gameState.timeUntilNextBooster--;
+            } else if (gameState.freeBoostersLeft < 2) {
+                gameState.freeBoostersLeft++;
+                gameState.timeUntilNextBooster = 12 * 60 * 60;
+            }
+            
+            document.getElementById('timerText').textContent = formatTime(gameState.timeUntilNextBooster);
+            document.getElementById('freeBoosters').textContent = gameState.freeBoostersLeft;
+        }
+
+        setInterval(updateTimer, 1000);
+
+        // Update UI
+        function updateUI() {
+            document.getElementById('playerGems').textContent = gameState.gems;
+            document.getElementById('dropdownGems').textContent = gameState.gems;
+            document.getElementById('freeBoosters').textContent = gameState.freeBoostersLeft;
+            renderQuests();
+        }
+
+        // Profile Dropdown
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('active');
+        });
+
+        document.addEventListener('click', () => {
+            profileDropdown.classList.remove('active');
+            questsPanel.classList.remove('active');
+        });
+
+        profileDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Quests
+        questsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            questsPanel.classList.toggle('active');
+        });
+
+        questsPanel.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        function renderQuests() {
+            const questsList = document.getElementById('questsList');
+            questsList.innerHTML = '';
+            
+            gameState.quests.forEach(quest => {
+                const questItem = document.createElement('div');
+                questItem.className = `quest-item ${quest.completed ? 'completed' : ''}`;
+                
+                const progressPercent = (quest.progress / quest.max) * 100;
+                
+                questItem.innerHTML = `
+                    <div class="quest-title">${quest.title}</div>
+                    <div class="quest-progress">
+                        <span>${quest.progress}/${quest.max}</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progressPercent}%"></div>
+                        </div>
+                        <span class="quest-reward">+${quest.reward} 💎</span>
+                    </div>
+                    <button class="claim-btn" ${!quest.completed ? 'disabled' : ''} onclick="claimQuest(${quest.id})">
+                        ${quest.completed ? 'Réclamer' : 'En cours...'}
+                    </button>
+                `;
+                
+                questsList.appendChild(questItem);
+            });
+        }
+
+        function claimQuest(questId) {
+            const quest = gameState.quests.find(q => q.id === questId);
+            if (quest && quest.completed) {
+                gameState.gems += quest.reward;
+                quest.completed = false;
+                quest.progress = 0;
+                updateUI();
+                
+                // Animation
+                const gemsDisplay = document.getElementById('playerGems');
+                gemsDisplay.style.transform = 'scale(1.3)';
+                gemsDisplay.style.color = '#fbbf24';
+                setTimeout(() => {
+                    gemsDisplay.style.transform = 'scale(1)';
+                    gemsDisplay.style.color = '';
+                }, 300);
+            }
+        }
+
+        // Ouvrir booster
+        function getRandomRarity() {
+            const rand = Math.random();
+            if (rand < 0.6) return 'common';
+            if (rand < 0.85) return 'rare';
+            if (rand < 0.97) return 'epic';
+            return 'legendary';
+        }
+
+        function openBooster(isPaid = false) {
+            if (!isPaid && gameState.freeBoostersLeft <= 0) {
+                alert('Plus de boosters gratuits ! Revenez dans ' + formatTime(gameState.timeUntilNextBooster));
+                return;
+            }
+
+            if (isPaid && gameState.gems < 100) {
+                alert('Pas assez de Gems ! (100 Gems requis)');
+                return;
+            }
+
+            boosterPack.classList.add('opening');
+
+            setTimeout(() => {
+                const cards = [];
+                const numCards = isPaid ? 50 : 5; // x10 = 50 cartes (10 boosters de 5)
+                
+                for (let i = 0; i < numCards; i++) {
+                    const rarity = getRandomRarity();
+                    cards.push({
+                        id: Date.now() + i,
+                        name: `Carte ${i + 1}`,
+                        rarity: rarity,
+                        icon: '🃏'
+                    });
+                }
+
+                boosterPack.classList.remove('opening');
+                displayCards(cards);
+
+                // Mettre à jour les ressources
+                if (!isPaid) {
+                    gameState.freeBoostersLeft--;
+                } else {
+                    gameState.gems -= 100;
+                }
+
+                // Mettre à jour les quêtes
+                updateQuestProgress(2, 1);
+                updateQuestProgress(3, 1);
+
+                updateUI();
+            }, 2000);
+        }
+
+        function updateQuestProgress(questId, amount) {
+            const quest = gameState.quests.find(q => q.id === questId);
+            if (quest && !quest.completed && quest.progress < quest.max) {
+                quest.progress = Math.min(quest.progress + amount, quest.max);
+                if (quest.progress >= quest.max) {
+                    quest.completed = true;
+                }
+            }
+        }
+
+        function displayCards(cards) {
+            cardsGrid.innerHTML = '';
+            
+            // Vérifier si on a des cartes légendaires ou épiques
+            const hasLegendary = cards.some(c => c.rarity === 'legendary');
+            const hasEpic = cards.some(c => c.rarity === 'epic');
+            
+            if (hasLegendary) {
+                document.body.classList.add('legendary-bg');
+            } else if (hasEpic) {
+                document.body.classList.add('epic-bg');
+            }
+
+            cards.forEach((card, index) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = `card ${card.rarity}`;
+                cardEl.style.animationDelay = `${index * 0.1}s`;
+                
+                const rarityNames = {
+                    common: 'Commun',
+                    rare: 'Rare',
+                    epic: 'Épique',
+                    legendary: 'Légendaire'
+                };
+                
+                cardEl.innerHTML = `
+                    <div class="card-icon">${card.icon}</div>
+                    <div class="card-name">${card.name}</div>
+                    <div class="card-rarity">${rarityNames[card.rarity]}</div>
+                `;
+                
+                cardsGrid.appendChild(cardEl);
+            });
+
+            cardsReveal.classList.add('active');
+        }
+
+        closeCards.addEventListener('click', () => {
+            cardsReveal.classList.remove('active');
+            document.body.classList.remove('legendary-bg', 'epic-bg');
+        });
+
+        openFreeBtn.addEventListener('click', () => openBooster(false));
+        openPaidBtn.addEventListener('click', () => openBooster(true));
+
+        // Navigation
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+                
+                const tab = item.dataset.tab;
+                if (tab !== 'home') {
+                    alert(`La section "${item.querySelector('.nav-label').textContent}" n'est pas encore disponible !`);
+                }
+            });
+        });
+
+        // Initialisation
+        renderQuests();
+        updateTimer();<script>(function() {
   const token = localStorage.getItem('authToken');
   if (!token) {
     // pas connecté -> redirection vers connexion
