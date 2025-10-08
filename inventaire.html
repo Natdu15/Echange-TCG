@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCG Arena - Inventaire</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(to right, #1f2937, #000);
+            border-bottom: 2px solid #374151;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(to right, #22d3ee, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .stat-selector {
+            background: #1f2937;
+            border: 2px solid #374151;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .stat-selector:hover {
+            border-color: #6366f1;
+        }
+
+        .stat-display {
+            background: linear-gradient(to right, #6366f1, #8b5cf6);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Filters */
+        .filters-section {
+            background: #111827;
+            border-bottom: 2px solid #374151;
+            padding: 1rem;
+        }
+
+        .filters-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            font-weight: 600;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #374151;
+            background: #1f2937;
+            color: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .filter-btn:hover {
+            border-color: #6366f1;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(to right, #6366f1, #8b5cf6);
+            border-color: #8b5cf6;
+        }
+
+        .search-bar {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.5rem 2.5rem 0.5rem 1rem;
+            background: #1f2937;
+            border: 2px solid #374151;
+            border-radius: 0.5rem;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .search-bar i {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .inventory-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .inventory-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #06b6d4, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .inventory-subtitle {
+            color: #9ca3af;
+            font-size: 1rem;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-wrapper {
+            position: relative;
+            aspect-ratio: 2/3;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .card-wrapper:hover {
+            transform: translateY(-10px);
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid;
+        }
+
+        .card.common {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            border-color: #9ca3af;
+        }
+
+        .card.rare {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-color: #60a5fa;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .card.epic {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            border-color: #c084fc;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+        }
+
+        .card.legendary {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            border-color: #fcd34d;
+            box-shadow: 0 0 40px rgba(251, 191, 36, 0.5);
+        }
+
+        .card-count {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin: 1rem 0;
+        }
+
+        .card-name {
+            font-weight: bold;
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-rarity {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .favorite-btn {
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            color: #9ca3af;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .favorite-btn:hover {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .favorite-btn.active {
+            color: #fbbf24;
+        }
+
+        /* Card Detail Modal */
+        .card-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .card-modal.active {
+            display: flex;
+        }
+
+        .card-modal-content {
+            background: #1f2937;
+            border: 2px solid #374151;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #ef4444;
+            border: none;
+            color: white;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: #dc2626;
+        }
+
+        .modal-card {
+            width: 300px;
+            height: 420px;
+            margin: 0 auto 1.5rem;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-info {
+            text-align: center;
+        }
+
+        .modal-card-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-card-rarity {
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .modal-card-count {
+            font-size: 1.25rem;
+            color: #9ca3af;
+        }
+
+        .modal-favorite-btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .modal-favorite-btn.active {
+            background: linear-gradient(to right, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .modal-favorite-btn:not(.active) {
+            background: #374151;
+            color: white;
+        }
+
+        .modal-favorite-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-text {
+            font-size: 1.25rem;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-subtext {
+            color: #6b7280;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: #1f2937;
+            border-top: 2px solid #374151;
+            padding: 0.75rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .nav-items {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            max-width: 120px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .nav-item:hover {
+            background: #374151;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(to right, #6366f1, #8b5cf6);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .cards-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: repeat(5, 1fr);
+                gap: 0.5rem;
+            }
+
+            .logo {
+                font-size: 1.25rem;
+            }
+
+            .inventory-title {
+                font-size: 1.5rem;
+            }
+
+            .card-icon {
+                font-size: 2rem;
+            }
+
+            .card-name {
+                font-size: 0.75rem;
+            }
+
+            .card-rarity {
+                font-size: 0.65rem;
+            }
+
+            .filters-content {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                flex-wrap: wrap;
+            }
+
+            .search-bar {
+                max-width: 100%;
+            }
+
+            .header-stats {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .stat-selector, .stat-display {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">⚔️ TCG ARENA</div>
+            <div class="header-stats">
+                <select class="stat-selector" id="statSelector">
+                    <option value="total">Total de cartes</option>
+                    <option value="unique">Cartes uniques</option>
+                    <option value="common">Cartes communes</option>
+                    <option value="rare">Cartes rares</option>
+                    <option value="epic">Cartes épiques</option>
+                    <option value="legendary">Cartes légendaires</option>
+                </select>
+                <div class="stat-display">
+                    <i class="fas fa-box"></i>
+                    <span id="statValue">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+        <div class="filters-content">
+            <div class="filter-group">
+                <span class="filter-label">Trier par:</span>
+                <button class="filter-btn active" data-sort="date">Date</button>
+                <button class="filter-btn" data-sort="rarity">Rareté</button>
+                <button class="filter-btn" data-sort="count">Quantité</button>
+            </div>
+            
+            <div class="filter-group">
+                <span class="filter-label">Rareté:</span>
+                <button class="filter-btn active" data-rarity="all">Toutes</button>
+                <button class="filter-btn" data-rarity="common">Commun</button>
+                <button class="filter-btn" data-rarity="rare">Rare</button>
+                <button class="filter-btn" data-rarity="epic">Épique</button>
+                <button class="filter-btn" data-rarity="legendary">Légendaire</button>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" placeholder="Rechercher une carte..." id="searchInput">
+                <i class="fas fa-search"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="inventory-header">
+            <h1 class="inventory-title">📦 Mon Inventaire</h1>
+            <p class="inventory-subtitle" id="inventorySubtitle">Votre collection de cartes</p>
+        </div>
+
+        <div class="cards-grid" id="cardsGrid">
+            <!-- Les cartes seront générées ici -->
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon">📭</div>
+            <div class="empty-text">Aucune carte trouvée</div>
+            <div class="empty-subtext">Ouvrez des boosters pour obtenir des cartes !</div>
+        </div>
+    </div>
+
+    <!-- Card Detail Modal -->
+    <div class="card-modal" id="cardModal">
+        <div class="card-modal-content">
+            <button class="modal-close" id="modalClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-card" id="modalCard">
+                <div class="card-icon" id="modalCardIcon">🃏</div>
+                <div class="modal-info">
+                    <div class="modal-card-name" id="modalCardName">Carte</div>
+                    <div class="modal-card-rarity" id="modalCardRarity">Commun</div>
+                    <div class="modal-card-count" id="modalCardCount">Possédé: x1</div>
+                </div>
+            </div>
+            <button class="modal-favorite-btn" id="modalFavoriteBtn">
+                <i class="fas fa-star"></i> Ajouter aux favoris
+            </button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-items">
+            <a href="index.html" class="nav-item">
+                <i class="nav-icon fas fa-home"></i>
+                <span class="nav-label">Accueil</span>
+            </a>
+            <div class="nav-item active">
+                <i class="nav-icon fas fa-box"></i>
+                <span class="nav-label">Inventaire</span>
+            </div>
+            <div class="nav-item">
+                <i class="nav-icon fas fa-exchange-alt"></i>
+                <span class="nav-label">Échanges</span>
+            </div>
+            <div class="nav-item">
+                <i class="nav-icon fas fa-swords"></i>
+                <span class="nav-label">Combats</span>
+            </div>
+            <div class="nav-item">
+                <i class="nav-icon fas fa-cog"></i>
+                <span class="nav-label">Paramètres</span>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        // Données de test - Simuler des cartes obtenues
+        let inventory = [
+            { id: 1, name: 'Dragon Noir', rarity: 'legendary', count: 1, favorite: false, date: Date.now() - 1000 },
+            { id: 2, name: 'Mage de Feu', rarity: 'epic', count: 2, favorite: true, date: Date.now() - 2000 },
+            { id: 3, name: 'Chevalier Sacré', rarity: 'rare', count: 3, favorite: false, date: Date.now() - 3000 },
+            { id: 4, name: 'Guerrier', rarity: 'common', count: 5, favorite: false, date: Date.now() - 4000 },
+            { id: 5, name: 'Archer Elfe', rarity: 'rare', count: 2, favorite: false, date: Date.now() - 5000 },
+            { id: 6, name: 'Sorcière', rarity: 'epic', count: 1, favorite: false, date: Date.now() - 6000 },
+            { id: 7, name: 'Paladin', rarity: 'rare', count: 2, favorite: false, date: Date.now() - 7000 },
+            { id: 8, name: 'Goblin', rarity: 'common', count: 8, favorite: false, date: Date.now() - 8000 },
+            { id: 9, name: 'Phénix Doré', rarity: 'legendary', count: 1, favorite: true, date: Date.now() - 9000 },
+            { id: 10, name: 'Voleur', rarity: 'common', count: 4, favorite: false, date: Date.now() - 10000 },
+        ];
+
+        // État des filtres
+        let currentSort = 'date';
+        let currentRarity = 'all';
+        let searchQuery = '';
+        let selectedCard = null;
+
+        // Éléments DOM
+        const cardsGrid = document.getElementById('cardsGrid');
+        const emptyState = document.getElementById('emptyState');
+        const statSelector = document.getElementById('statSelector');
+        const statValue = document.getElementById('statValue');
+        const searchInput = document.getElementById('searchInput');
+        const cardModal = document.getElementById('cardModal');
+        const modalClose = document.getElementById('modalClose');
+        const modalCard = document.getElementById('modalCard');
+        const modalCardIcon = document.getElementById('modalCardIcon');
+        const modalCardName = document.getElementById('modalCardName');
+        const modalCardRarity = document.getElementById('modalCardRarity');
+        const modalCardCount = document.getElementById('modalCardCount');
+        const modalFavoriteBtn = document.getElementById('modalFavoriteBtn');
+
+        // Fonctions de tri
+        function sortInventory(inventory, sortBy) {
+            const sorted = [...inventory];
+            switch(sortBy) {
+                case 'date':
+                    return sorted.sort((a, b) => b.date - a.date);
+                case 'rarity':
+                    const rarityOrder = { legendary: 4, epic: 3, rare: 2, common: 1 };
+                    return sorted.sort((a, b) => rarityOrder[b.rarity] - rarityOrder[a.rarity]);
+                case 'count':
+                    return sorted.sort((a, b) => b.count - a.count);
+                default:
+                    return sorted;
+            }
+        }
+
+        // Filtrer l'inventaire
+        function filterInventory() {
+            let filtered = [...inventory];
+
+            // Filtre par rareté
+            if (currentRarity !== 'all') {
+                filtered = filtered.filter(card => card.rarity === currentRarity);
+            }
+
+            // Filtre par recherche
+            if (searchQuery) {
+                filtered = filtered.filter(card => 
+                    card.name.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+            }
+
+            return sortInventory(filtered, currentSort);
+        }
+
+        // Calculer les statistiques
+        function calculateStats(statType) {
+            switch(statType) {
+                case 'total':
+                    return inventory.reduce((sum, card) => sum + card.count, 0);
+                case 'unique':
+                    return inventory.length;
+                case 'common':
+                    return inventory.filter(c => c.rarity === 'common').reduce((sum, card) => sum + card.count, 0);
+                case 'rare':
+                    return inventory.filter(c => c.rarity === 'rare').reduce((sum, card) => sum + card.count, 0);
+                case 'epic':
+                    return inventory.filter(c => c.rarity === 'epic').reduce((sum, card) => sum + card.count, 0);
+                case 'legendary':
+                    return inventory.filter(c => c.rarity === 'legendary').reduce((sum, card) => sum + card.count, 0);
+                default:
+                    return 0;
+            }
+        }
+
+        // Afficher les cartes
+        function renderCards() {
+            const filtered = filterInventory();
+            cardsGrid.innerHTML = '';
+
+            if (filtered.length === 0) {
+                emptyState.style.display = 'block';
+                cardsGrid.style.display = 'none';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            cardsGrid.style.display = 'grid';
+
+            const rarityNames = {
+                common: 'Commun',
+                rare: 'Rare',
+                epic: 'Épique',
+                legendary: 'Légendaire'
+            };
+
+            filtered.forEach(card => {
+                const cardWrapper = document.createElement('div');
+                cardWrapper.className = 'card-wrapper';
+                
+                cardWrapper.innerHTML = `
+                    <div class="card ${card.rarity}">
+                        <button class="favorite-btn ${card.favorite ? 'active' : ''}" data-id="${card.id}">
+                            <i class="fas fa-star"></i>
+                        </button>
+                        <div class="card-count">x${card.count}</div>
+                        <div class="card-icon">🃏</div>
+                        <div class="card-name">${card.name}</div>
+                        <div class="card-rarity">${rarityNames[card.rarity]}</div>
+                    </div>
+                `;
+
+                cardWrapper.addEventListener('click', (e) => {
+                    if (!e.target.closest('.favorite-btn')) {
+                        openCardModal(card);
+                    }
+                });
+
+                const favoriteBtn = cardWrapper.querySelector('.favorite-btn');
+                favoriteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleFavorite(card.id);
+                });
+
+                cardsGrid.appendChild(cardWrapper);
+            });
+
+            updateStats();
+        }
+
+        // Mettre à jour les statistiques
+        function updateStats() {
+            const stat = calculateStats(statSelector.value);
+            statValue.textContent = stat;
+        }
+
+        // Toggle favori
+        function toggleFavorite(cardId) {
+            const card = inventory.find(c => c.id === cardId);
+            if (card) {
+                card.favorite = !card.favorite;
+                renderCards();
+            }
+        }
+
+        // Ouvrir modal de détail
+        function openCardModal(card) {
+            selectedCard = card;
+            
+            const rarityNames = {
+                common: 'Commun',
+                rare: 'Rare',
+                epic: 'Épique',
+                legendary: 'Légendaire'
+            };
+
+            const rarityClasses = {
+                common: 'common',
+                rare: 'rare',
+                epic: 'epic',
+                legendary: 'legendary'
+            };
+
+            modalCard.className = `modal-card card ${rarityClasses[card.rarity]}`;
+            modalCardIcon.textContent = '🃏';
+            modalCardName.textContent = card.name;
+            modalCardRarity.textContent = rarityNames[card.rarity];
+            modalCardCount.textContent = `Possédé: x${card.count}`;
+            
+            if (card.favorite) {
+                modalFavoriteBtn.classList.add('active');
+                modalFavoriteBtn.innerHTML = '<i class="fas fa-star"></i> Retirer des favoris';
+            } else {
+                modalFavoriteBtn.classList.remove('active');
+                modalFavoriteBtn.innerHTML = '<i class="fas fa-star"></i> Ajouter aux favoris';
+            }
+
+            cardModal.classList.add('active');
+        }
+
+        // Fermer modal
+        modalClose.addEventListener('click', () => {
+            cardModal.classList.remove('active');
+        });
+
+        cardModal.addEventListener('click', (e) => {
+            if (e.target === cardModal) {
+                cardModal.classList.remove('active');
+            }
+        });
+
+        // Toggle favori depuis modal
+        modalFavoriteBtn.addEventListener('click', () => {
+            if (selectedCard) {
+                toggleFavorite(selectedCard.id);
+                openCardModal(selectedCard); // Recharger le modal
+            }
+        });
+
+        // Changement de statistique
+        statSelector.addEventListener('change', updateStats);
+
+        // Filtres de tri
+        document.querySelectorAll('[data-sort]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-sort]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSort = btn.dataset.sort;
+                renderCards();
+            });
+        });
+
+        // Filtres de rareté
+        document.querySelectorAll('[data-rarity]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-rarity]').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentRarity = btn.dataset.rarity;
+                renderCards();
+            });
+        });
+
+        // Recherche
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderCards();
+        });
+
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (!item.
