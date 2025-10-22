@@ -1,24 +1,16 @@
-// Données de test - Simuler des cartes obtenues
-let inventory = [
-    { id: 1, name: 'Dragon Noir', rarity: 'legendary', count: 1, favorite: false, date: Date.now() - 1000 },
-    { id: 2, name: 'Mage de Feu', rarity: 'epic', count: 2, favorite: true, date: Date.now() - 2000 },
-    { id: 3, name: 'Chevalier Sacré', rarity: 'rare', count: 3, favorite: false, date: Date.now() - 3000 },
-    { id: 4, name: 'Guerrier', rarity: 'common', count: 5, favorite: false, date: Date.now() - 4000 },
-    { id: 5, name: 'Archer Elfe', rarity: 'rare', count: 2, favorite: false, date: Date.now() - 5000 },
-    { id: 6, name: 'Sorcière', rarity: 'epic', count: 1, favorite: false, date: Date.now() - 6000 },
-    { id: 7, name: 'Paladin', rarity: 'rare', count: 2, favorite: false, date: Date.now() - 7000 },
-    { id: 8, name: 'Goblin', rarity: 'common', count: 8, favorite: false, date: Date.now() - 8000 },
-    { id: 9, name: 'Phénix Doré', rarity: 'legendary', count: 1, favorite: true, date: Date.now() - 9000 },
-    { id: 10, name: 'Voleur', rarity: 'common', count: 4, favorite: false, date: Date.now() - 10000 },
-];
+let inventory = []; // Les cartes packées par l'utilisateur seront ajoutées ici dynamiquement
 
-// État des filtres
+// ===============================
+// ÉTAT DES FILTRES ET VARIABLES
+// ===============================
 let currentSort = 'date';
 let currentRarity = 'all';
 let searchQuery = '';
 let selectedCard = null;
 
-// Éléments DOM
+// ===============================
+// ÉLÉMENTS DU DOM
+// ===============================
 const cardsGrid = document.getElementById('cardsGrid');
 const emptyState = document.getElementById('emptyState');
 const statSelector = document.getElementById('statSelector');
@@ -33,14 +25,16 @@ const modalCardRarity = document.getElementById('modalCardRarity');
 const modalCardCount = document.getElementById('modalCardCount');
 const modalFavoriteBtn = document.getElementById('modalFavoriteBtn');
 
-// Fonctions de tri
+// ===============================
+// TRI DES CARTES
+// ===============================
 function sortInventory(inventory, sortBy) {
     const sorted = [...inventory];
-    switch(sortBy) {
+    switch (sortBy) {
         case 'date':
             return sorted.sort((a, b) => b.date - a.date);
         case 'rarity':
-            const rarityOrder = { legendary: 4, epic: 3, rare: 2, common: 1 };
+            const rarityOrder = { unique: 3, rare: 2, common: 1 };
             return sorted.sort((a, b) => rarityOrder[b.rarity] - rarityOrder[a.rarity]);
         case 'count':
             return sorted.sort((a, b) => b.count - a.count);
@@ -49,18 +43,18 @@ function sortInventory(inventory, sortBy) {
     }
 }
 
-// Filtrer l'inventaire
+// ===============================
+// FILTRAGE DES CARTES
+// ===============================
 function filterInventory() {
     let filtered = [...inventory];
 
-    // Filtre par rareté
     if (currentRarity !== 'all') {
         filtered = filtered.filter(card => card.rarity === currentRarity);
     }
 
-    // Filtre par recherche
     if (searchQuery) {
-        filtered = filtered.filter(card => 
+        filtered = filtered.filter(card =>
             card.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }
@@ -68,9 +62,11 @@ function filterInventory() {
     return sortInventory(filtered, currentSort);
 }
 
-// Calculer les statistiques
+// ===============================
+// CALCUL DES STATISTIQUES
+// ===============================
 function calculateStats(statType) {
-    switch(statType) {
+    switch (statType) {
         case 'total':
             return inventory.reduce((sum, card) => sum + card.count, 0);
         case 'unique':
@@ -79,16 +75,16 @@ function calculateStats(statType) {
             return inventory.filter(c => c.rarity === 'common').reduce((sum, card) => sum + card.count, 0);
         case 'rare':
             return inventory.filter(c => c.rarity === 'rare').reduce((sum, card) => sum + card.count, 0);
-        case 'epic':
-            return inventory.filter(c => c.rarity === 'epic').reduce((sum, card) => sum + card.count, 0);
-        case 'legendary':
-            return inventory.filter(c => c.rarity === 'legendary').reduce((sum, card) => sum + card.count, 0);
+        case 'uniqueRarity':
+            return inventory.filter(c => c.rarity === 'unique').reduce((sum, card) => sum + card.count, 0);
         default:
             return 0;
     }
 }
 
-// Afficher les cartes
+// ===============================
+// AFFICHAGE DES CARTES
+// ===============================
 function renderCards() {
     const filtered = filterInventory();
     cardsGrid.innerHTML = '';
@@ -105,14 +101,13 @@ function renderCards() {
     const rarityNames = {
         common: 'Commun',
         rare: 'Rare',
-        epic: 'Épique',
-        legendary: 'Légendaire'
+        unique: 'Unique'
     };
 
     filtered.forEach(card => {
         const cardWrapper = document.createElement('div');
         cardWrapper.className = 'card-wrapper';
-        
+
         cardWrapper.innerHTML = `
             <div class="card ${card.rarity}">
                 <button class="favorite-btn ${card.favorite ? 'active' : ''}" data-id="${card.id}">
@@ -143,13 +138,17 @@ function renderCards() {
     updateStats();
 }
 
-// Mettre à jour les statistiques
+// ===============================
+// MISE À JOUR DES STATS
+// ===============================
 function updateStats() {
     const stat = calculateStats(statSelector.value);
     statValue.textContent = stat;
 }
 
-// Toggle favori
+// ===============================
+// GESTION DES FAVORIS
+// ===============================
 function toggleFavorite(cardId) {
     const card = inventory.find(c => c.id === cardId);
     if (card) {
@@ -158,30 +157,24 @@ function toggleFavorite(cardId) {
     }
 }
 
-// Ouvrir modal de détail
+// ===============================
+// MODAL DE DÉTAIL
+// ===============================
 function openCardModal(card) {
     selectedCard = card;
-    
+
     const rarityNames = {
         common: 'Commun',
         rare: 'Rare',
-        epic: 'Épique',
-        legendary: 'Légendaire'
+        unique: 'Unique'
     };
 
-    const rarityClasses = {
-        common: 'common',
-        rare: 'rare',
-        epic: 'epic',
-        legendary: 'legendary'
-    };
-
-    modalCard.className = `modal-card card ${rarityClasses[card.rarity]}`;
+    modalCard.className = `modal-card card ${card.rarity}`;
     modalCardIcon.textContent = '🃏';
     modalCardName.textContent = card.name;
     modalCardRarity.textContent = rarityNames[card.rarity];
     modalCardCount.textContent = `Possédé: x${card.count}`;
-    
+
     if (card.favorite) {
         modalFavoriteBtn.classList.add('active');
         modalFavoriteBtn.innerHTML = '<i class="fas fa-star"></i> Retirer des favoris';
@@ -193,7 +186,9 @@ function openCardModal(card) {
     cardModal.classList.add('active');
 }
 
-// Fermer modal
+// ===============================
+// FERMETURE MODAL
+// ===============================
 modalClose.addEventListener('click', () => {
     cardModal.classList.remove('active');
 });
@@ -204,18 +199,21 @@ cardModal.addEventListener('click', (e) => {
     }
 });
 
-// Toggle favori depuis modal
+// ===============================
+// FAVORI DEPUIS LE MODAL
+// ===============================
 modalFavoriteBtn.addEventListener('click', () => {
     if (selectedCard) {
         toggleFavorite(selectedCard.id);
-        openCardModal(selectedCard); // Recharger le modal
+        openCardModal(selectedCard);
     }
 });
 
-// Changement de statistique
+// ===============================
+// FILTRES ET RECHERCHE
+// ===============================
 statSelector.addEventListener('change', updateStats);
 
-// Filtres de tri
 document.querySelectorAll('[data-sort]').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('[data-sort]').forEach(b => b.classList.remove('active'));
@@ -225,7 +223,6 @@ document.querySelectorAll('[data-sort]').forEach(btn => {
     });
 });
 
-// Filtres de rareté
 document.querySelectorAll('[data-rarity]').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('[data-rarity]').forEach(b => b.classList.remove('active'));
@@ -235,13 +232,14 @@ document.querySelectorAll('[data-rarity]').forEach(btn => {
     });
 });
 
-// Recherche
 searchInput.addEventListener('input', (e) => {
     searchQuery = e.target.value;
     renderCards();
 });
 
-// Navigation - Alertes pour pages non développées
+// ===============================
+// NAVIGATION - ALERTES TEMPORAIRES
+// ===============================
 document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', (e) => {
         if (!item.classList.contains('active') && !item.hasAttribute('href')) {
@@ -251,7 +249,31 @@ document.querySelectorAll('.nav-item').forEach(item => {
     });
 });
 
-// Initialisation au chargement de la page
+// ===============================
+// INITIALISATION
+// ===============================
 document.addEventListener('DOMContentLoaded', () => {
     renderCards();
 });
+
+// ===============================
+// AJOUT DYNAMIQUE D’UNE CARTE PACKÉE
+// ===============================
+// Exemple d'utilisation à appeler ailleurs dans ton code :
+//
+// function addCard(card) {
+//     const existing = inventory.find(c => c.name === card.name);
+//     if (existing) {
+//         existing.count += card.count;
+//     } else {
+//         inventory.push({
+//             id: Date.now(),
+//             name: card.name,
+//             rarity: card.rarity, // 'common', 'rare' ou 'unique'
+//             count: card.count || 1,
+//             favorite: false,
+//             date: Date.now()
+//         });
+//     }
+//     renderCards();
+// }
