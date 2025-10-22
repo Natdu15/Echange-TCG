@@ -1,2 +1,89 @@
 
 
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paramètres - TCG ARENA</title>
+  <link rel="icon" href="logo-tcg.png" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/parametres.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">⚙️ Paramètres</div>
+      <button class="profile-btn" id="profileBtn">
+        <span class="profile-avatar" id="avatarPreview">🎮</span>
+        <div class="profile-info">
+          <div class="profile-name" id="profileName">Joueur</div>
+          <div class="profile-stats">
+            <span class="gems">💎 <span id="playerGems">0</span></span>
+          </div>
+        </div>
+        <i class="fas fa-user"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Contenu principal -->
+  <main class="settings-container">
+    <section class="setting-section">
+      <h2>👤 Profil</h2>
+      <label for="newPseudo">Changer de pseudo :</label>
+      <input type="text" id="newPseudo" placeholder="Nouveau pseudo">
+      <label for="newAvatar">Changer d'avatar :</label>
+      <select id="newAvatar">
+        <option value="🎮">🎮</option>
+        <option value="🐉">🐉</option>
+        <option value="🧙‍♂️">🧙‍♂️</option>
+        <option value="⚔️">⚔️</option>
+        <option value="👑">👑</option>
+      </select>
+      <button class="btn btn-primary" id="saveProfileBtn">Enregistrer</button>
+    </section>
+
+    <section class="setting-section">
+      <h2>🌗 Apparence</h2>
+      <div class="theme-toggle">
+        <label>
+          <input type="checkbox" id="themeSwitch">
+          Activer le mode clair
+        </label>
+      </div>
+    </section>
+
+    <section class="setting-section">
+      <h2>🔊 Son</h2>
+      <label>
+        <input type="checkbox" id="soundToggle" checked>
+        Activer les sons du jeu
+      </label>
+    </section>
+
+    <section class="setting-section logout-section">
+      <button class="btn btn-secondary" id="logoutBtn">
+        <i class="fas fa-sign-out-alt"></i> Déconnexion
+      </button>
+    </section>
+  </main>
+
+  <!-- Navigation -->
+  <nav class="bottom-nav">
+    <div class="nav-items">
+      <div class="nav-item" data-tab="home" onclick="window.location.href='accueil.html'">
+        <i class="nav-icon fas fa-home"></i>
+        <span class="nav-label">Accueil</span>
+      </div>
+      <div class="nav-item active" data-tab="settings">
+        <i class="nav-icon fas fa-cog"></i>
+        <span class="nav-label">Paramètres</span>
+      </div>
+    </div>
+  </nav>
+
+  <script src="js/parametres.js"></script>
+</body>
+</html>
