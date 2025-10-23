@@ -5,7 +5,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   const password = document.getElementById('password').value;
 
   try {
-    // Lecture du fichier JSON sur GitHub
     const res = await fetch("https://raw.githubusercontent.com/TON_USERNAME/TON_REPO/main/data/users.json");
     const users = await res.json();
 
@@ -16,13 +15,12 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
       return;
     }
 
-    if (user.password !== password) { // tu peux hasher si besoin
+    if (user.password !== password) { 
       alert("❌ Email ou mot de passe incorrect.");
       return;
     }
 
     alert(`✅ Connexion réussie ! Bienvenue, ${user.username} !`);
-    // Optionnel : stocker session dans sessionStorage ou localStorage côté client
     sessionStorage.setItem("connectedUser", JSON.stringify(user));
     window.location.href = "accueil.html";
 
