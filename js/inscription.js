@@ -11,7 +11,6 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     return;
   }
 
-  // Optionnel : vérifier complexité du mot de passe
   const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
   if (!regex.test(password)) {
     alert("❌ Mot de passe trop faible. Ajoute une majuscule, un chiffre et un symbole.");
@@ -21,7 +20,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   const newUser = {
     username,
     email,
-    password, // à hasher côté serveur si nécessaire
+    password, 
     tcgAccount: {
       cards: [],
       level: 1,
@@ -33,7 +32,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   };
 
   try {
-    const res = await fetch("http://localhost:3000/api/register", { // ton serveur Node.js
+    const res = await fetch("http://localhost:3000/api/register", { 
       method: "POST",
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify(newUser)
