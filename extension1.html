@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extension - TCG</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Bubbles */
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(138, 118, 241, 0.3), rgba(122, 97, 241, 0.1));
+            animation: float linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* Top Header */
+        .top-header {
+            background: linear-gradient(135deg, rgba(122, 97, 241, 0.2) 0%, rgba(200, 70, 180, 0.2) 100%);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(122, 97, 241, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .extension-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .extension-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #7a61f1, #c846b4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 4px 15px rgba(122, 97, 241, 0.4);
+        }
+
+        .extension-details h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            background: linear-gradient(90deg, #7a61f1, #c846b4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .extension-details p {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .extension-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #7a61f1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 180px);
+            padding: 40px 20px 100px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Carousel Container */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            perspective: 1000px;
+        }
+
+        .pack-card {
+            position: absolute;
+            width: 300px;
+            height: 420px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            border: 3px solid transparent;
+        }
+
+        .pack-card.active {
+            transform: scale(1.15) translateZ(50px);
+            z-index: 10;
+            border-color: #7a61f1;
+            box-shadow: 0 20px 60px rgba(122, 97, 241, 0.5);
+        }
+
+        .pack-card.left {
+            transform: translateX(-250px) scale(0.85) rotateY(15deg);
+            z-index: 5;
+            opacity: 0.6;
+        }
+
+        .pack-card.right {
+            transform: translateX(250px) scale(0.85) rotateY(-15deg);
+            z-index: 5;
+            opacity: 0.6;
+        }
+
+        .pack-card.hidden {
+            opacity: 0;
+            transform: scale(0.5);
+            pointer-events: none;
+        }
+
+        .pack-image {
+            width: 200px;
+            height: 280px;
+            background: linear-gradient(135deg, #7a61f1, #c846b4);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 25px rgba(122, 97, 241, 0.3);
+        }
+
+        .pack-name {
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .pack-rarity {
+            font-size: 14px;
+            color: #7a61f1;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Navigation Arrows */
+        .carousel-nav {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 15;
+        }
+
+        .nav-arrow {
+            width: 50px;
+            height: 50px;
+            background: rgba(122, 97, 241, 0.3);
+            border: 2px solid #7a61f1;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-arrow:hover {
+            background: rgba(122, 97, 241, 0.6);
+            transform: scale(1.1);
+        }
+
+        /* Open Pack Button */
+        .open-pack-btn {
+            margin-top: 40px;
+            padding: 18px 50px;
+            background: linear-gradient(135deg, #7a61f1, #c846b4);
+            border: none;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(122, 97, 241, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .open-pack-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(122, 97, 241, 0.6);
+        }
+
+        /* Bottom Navigation */
+        .navbar {
+            background-color: rgba(15, 20, 25, 0.95);
+            padding: 12px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .nav-item.active {
+            background-color: #7a61f1;
+        }
+
+        .nav-item:hover:not(.active) {
+            background-color: rgba(122, 97, 241, 0.2);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .carousel-container {
+                height: 400px;
+            }
+
+            .pack-card {
+                width: 240px;
+                height: 350px;
+            }
+
+            .pack-card.left {
+                transform: translateX(-180px) scale(0.8) rotateY(15deg);
+            }
+
+            .pack-card.right {
+                transform: translateX(180px) scale(0.8) rotateY(-15deg);
+            }
+
+            .extension-stats {
+                gap: 15px;
+            }
+
+            .stat-value {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Bubbles -->
+    <div id="bubbles"></div>
+
+    <!-- Top Header -->
+    <header class="top-header">
+        <div class="extension-info">
+            <div class="extension-icon">✨</div>
+            <div class="extension-details">
+                <h1>Série Légendaire</h1>
+                <p>Extension Spéciale • 2025</p>
+            </div>
+        </div>
+        <div class="extension-stats">
+            <div class="stat-item">
+                <div class="stat-value">150</div>
+                <div class="stat-label">Cartes</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">5</div>
+                <div class="stat-label">Packs</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Ultra Rares</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="carousel-container">
+            <!-- Navigation Arrows -->
+            <div class="carousel-nav">
+                <div class="nav-arrow" onclick="prevPack()">❮</div>
+                <div class="nav-arrow" onclick="nextPack()">❯</div>
+            </div>
+
+            <!-- Pack Cards -->
+            <div class="pack-card active" data-index="0">
+                <div class="pack-image">🎴</div>
+                <div class="pack-name">Pack Standard</div>
+                <div class="pack-rarity">Commun</div>
+            </div>
+
+            <div class="pack-card right" data-index="1">
+                <div class="pack-image">💎</div>
+                <div class="pack-name">Pack Premium</div>
+                <div class="pack-rarity">Rare</div>
+            </div>
+
+            <div class="pack-card hidden" data-index="2">
+                <div class="pack-image">⭐</div>
+                <div class="pack-name">Pack Elite</div>
+                <div class="pack-rarity">Épique</div>
+            </div>
+
+            <div class="pack-card hidden" data-index="3">
+                <div class="pack-image">👑</div>
+                <div class="pack-name">Pack Royal</div>
+                <div class="pack-rarity">Légendaire</div>
+            </div>
+
+            <div class="pack-card hidden" data-index="4">
+                <div class="pack-image">🔥</div>
+                <div class="pack-name">Pack Mythique</div>
+                <div class="pack-rarity">Mythique</div>
+            </div>
+        </div>
+
+        <button class="open-pack-btn" onclick="openPack()">Ouvrir le Pack</button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <span>Accueil</span>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">🎒</div>
+                <span>Inventaire</span>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">🔄</div>
+                <span>Échanges</span>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">⚔️</div>
+                <span>Combats</span>
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">⚙️</div>
+                <span>Paramètres</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        // Create animated bubbles
+        function createBubbles() {
+            const bubblesContainer = document.getElementById('bubbles');
+            const bubbleCount = 15;
+
+            for (let i = 0; i < bubbleCount; i++) {
+                const bubble = document.createElement('div');
+                bubble.classList.add('bubble');
+                
+                const size = Math.random() * 100 + 50;
+                bubble.style.width = `${size}px`;
+                bubble.style.height = `${size}px`;
+                bubble.style.left = `${Math.random() * 100}%`;
+                bubble.style.animationDuration = `${Math.random() * 10 + 10}s`;
+                bubble.style.animationDelay = `${Math.random() * 5}s`;
+                
+                // Random color between blue and violet
+                const hue = Math.random() * 60 + 240; // 240-300 (blue to violet)
+                bubble.style.background = `radial-gradient(circle at 30% 30%, hsla(${hue}, 70%, 60%, 0.3), hsla(${hue}, 70%, 50%, 0.1))`;
+                
+                bubblesContainer.appendChild(bubble);
+            }
+        }
+
+        createBubbles();
+
+        // Carousel functionality
+        let currentIndex = 0;
+        const packs = document.querySelectorAll('.pack-card');
+        const totalPacks = packs.length;
+
+        function updateCarousel() {
+            packs.forEach((pack, index) => {
+                pack.classList.remove('active', 'left', 'right', 'hidden');
+                
+                if (index === currentIndex) {
+                    pack.classList.add('active');
+                } else if (index === (currentIndex - 1 + totalPacks) % totalPacks) {
+                    pack.classList.add('left');
+                } else if (index === (currentIndex + 1) % totalPacks) {
+                    pack.classList.add('right');
+                } else {
+                    pack.classList.add('hidden');
+                }
+            });
+        }
+
+        function nextPack() {
+            currentIndex = (currentIndex + 1) % totalPacks;
+            updateCarousel();
+        }
+
+        function prevPack() {
+            currentIndex = (currentIndex - 1 + totalPacks) % totalPacks;
+            updateCarousel();
+        }
+
+        function openPack() {
+            const activePack = packs[currentIndex].querySelector('.pack-name').textContent;
+            alert(`Ouverture du ${activePack}...`);
+        }
+
+        // Click on pack to activate it
+        packs.forEach((pack, index) => {
+            pack.addEventListener('click', () => {
+                currentIndex = index;
+                updateCarousel();
+            });
+        });
+    </script>
+</body>
+</html>
