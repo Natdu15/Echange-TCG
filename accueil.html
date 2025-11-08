@@ -23,7 +23,6 @@
                     </div>
                 </div>
                 <i class="fas fa-user"></i>
-
                 <!-- Profile Dropdown -->
                 <div class="profile-dropdown" id="profileDropdown">
                     <div class="profile-dropdown-header">
@@ -39,12 +38,10 @@
             </button>
         </div>
     </div>
-
     <!-- Main Content -->
     <div class="main-content">
         <div class="booster-section">
             <h2 class="booster-title">📦 Ouvre tes Boosters !</h2>
-
             <div class="booster-carousel">
                 <div class="booster-track" id="boosterTrack">
                     <div class="booster-pack" data-page="extension1.html">Extension ;;;</div>
@@ -52,7 +49,6 @@
                     <div class="booster-pack" data-page="extension3.html">Extension ///</div>
                 </div>
             </div>
-
             <div class="booster-info">
                 <div class="free-boosters">
                     <i class="fas fa-gift"></i> <span id="freeBoosters">2</span>/2 Gratuits
@@ -62,7 +58,6 @@
                     <span id="timerText">12h 00m 00s</span>
                 </div>
             </div>
-
             <div class="booster-actions">
                 <button class="btn btn-primary" id="openFreeBtn">
                     <i class="fas fa-gift"></i> Ouvrir (Gratuit)
@@ -73,7 +68,6 @@
             </div>
         </div>
     </div>
-
     <!-- Cards Reveal -->
     <div class="cards-reveal" id="cardsReveal">
         <button class="close-cards" id="closeCards">
@@ -81,12 +75,10 @@
         </button>
         <div class="cards-grid" id="cardsGrid"></div>
     </div>
-
     <!-- Quests Button -->
     <button class="quests-btn" id="questsBtn">
         <i class="fas fa-trophy"></i>
     </button>
-
     <!-- Quests Panel -->
     <div class="quests-panel" id="questsPanel">
         <div class="quests-header">
@@ -94,7 +86,6 @@
         </div>
         <div id="questsList"></div>
     </div>
-
     <!-- Bottom Navigation -->
     <nav class="navbar">
         <div class="nav-container">
@@ -120,7 +111,6 @@
             </a>
         </div>
     </nav>
-
     <script>
         // Redirection sur clic pour chaque booster
         document.querySelectorAll('.booster-pack').forEach(pack => {
@@ -129,7 +119,6 @@
                 if (page) window.location.href = page;
             });
         });
-
         const track = document.getElementById('boosterTrack');
 let isDragging = false;
 let startX;
