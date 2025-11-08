@@ -191,6 +191,41 @@
             position: relative;
             margin: 2rem 0;
         }
+        .booster-container a {
+        text-decoration: none;
+        color : white;
+        }
+        .booster-carousel {
+    width: 100%;
+    overflow: hidden;
+    padding: 1rem 0;
+    cursor: grab;
+    position: relative;
+}
+
+.booster-track {
+    display: flex;
+    gap: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.booster-pack {
+    min-width: 200px;
+    height: 120px;
+    background: linear-gradient(to right, #10b981, #059669);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #fff;
+    user-select: none;
+}
+.booster-pack.dragging {
+    cursor: grabbing;
+    opacity: 0.8;
+}
 
         .booster-pack {
             width: 200px;
@@ -546,50 +581,48 @@
         }
 
         /* Bottom Navigation */
-        .bottom-nav {
-            background: #1f2937;
-            border-top: 2px solid #374151;
-            padding: 0.75rem;
-            position: fixed;
+        .navbar {
+            background-color: #0f1419;
+            padding: 7px 0;
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
             bottom: 0;
-            width: 100%;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
 
-        .nav-items {
-            max-width: 1280px;
-            margin: 0 auto;
+        .nav-container {
             display: flex;
             justify-content: space-around;
             align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.25rem;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+            gap: 8px;
+            padding: 10px 25px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s;
-            flex: 1;
-            max-width: 120px;
-        }
-
-        .nav-item:hover {
-            background: #374151;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #fff;
         }
 
         .nav-item.active {
-            background: linear-gradient(to right, #6366f1, #8b5cf6);
+            background-color: #7a61f1;
+        }
+
+        .nav-item:hover:not(.active) {
+            background-color: #1e2936;
         }
 
         .nav-icon {
-            font-size: 1.5rem;
-        }
-
-        .nav-label {
-            font-size: 0.75rem;
+            font-size: 24px;
         }
 
         /* Responsive */
