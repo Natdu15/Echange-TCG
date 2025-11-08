@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="icon" type="logo-tcg.png" href="logo-tcg.png">
-  <title>Connexion TCG</title>
+    <link rel="icon" type="logo-tcg.png" href="logo-tcg.png">
+    <title>Connexion TCG</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/accueil.css">
 </head>
 <body>
+    <!-- Header -->
     <div class="header">
         <div class="header-content">
             <div class="logo">⚔️ TCG ARENA</div>
@@ -22,7 +23,7 @@
                     </div>
                 </div>
                 <i class="fas fa-user"></i>
-                
+
                 <!-- Profile Dropdown -->
                 <div class="profile-dropdown" id="profileDropdown">
                     <div class="profile-dropdown-header">
@@ -33,12 +34,7 @@
                             <span class="badge badge-gems">💎 <span id="dropdownGems">0</span></span>
                         </div>
                     </div>
-                    <div class="favorite-cards">
-                        <h4><i class="fas fa-star" style="color: #fbbf24;"></i> Cartes préférées</h4>
-                        <div class="card-item">🃏 Dragon Noir</div>
-                        <div class="card-item">🃏 Mage de Feu</div>
-                        <div class="card-item">🃏 Chevalier Sacré</div>
-                    </div>
+
                 </div>
             </button>
         </div>
@@ -48,11 +44,12 @@
     <div class="main-content">
         <div class="booster-section">
             <h2 class="booster-title">📦 Ouvre tes Boosters !</h2>
-            
-            <div class="booster-container">
-                <div class="booster-pack" id="boosterPack">
-                    <div class="booster-icon">📦</div>
-                    <div class="booster-name">Extension Basique</div>
+
+            <div class="booster-carousel">
+                <div class="booster-track" id="boosterTrack">
+                    <div class="booster-pack" data-page="extension1.html">Extension ;;;</div>
+                    <div class="booster-pack" data-page="extension2.html">Extension ???</div>
+                    <div class="booster-pack" data-page="extension3.html">Extension ///</div>
                 </div>
             </div>
 
@@ -99,30 +96,116 @@
     </div>
 
     <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <div class="nav-items">
-            <div class="nav-item active" data-tab="home">
-                <i class="nav-icon fas fa-home"></i>
-                <span class="nav-label">Accueil</span>
-            </div>
-            <div class="nav-item" data-tab="inventory">
-                <i class="nav-icon fas fa-box"></i>
-                <span class="nav-label">Inventaire</span>
-            </div>
-            <div class="nav-item" data-tab="trades">
-                <i class="nav-icon fas fa-exchange-alt"></i>
-                <span class="nav-label">Échanges</span>
-            </div>
-            <div class="nav-item" data-tab="battles">
-                <i class="nav-icon fas fa-swords"></i>
-                <span class="nav-label">Combats</span>
-            </div>
-            <div class="nav-item" data-tab="settings">
-                <i class="nav-icon fas fa-cog"></i>
-                <span class="nav-label">Paramètres</span>
-            </div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="accueil.html" class="nav-item active">
+                <div class="nav-icon">🏠</div>
+                <span>Accueil</span>
+            </a>
+            <a href="inventaire.html" class="nav-item">
+                <div class="nav-icon">🎒</div>
+                <span>Inventaire</span>
+            </a>
+            <a href="echange.html" class="nav-item">
+                <div class="nav-icon">🔄</div>
+                <span>Échanges</span>
+            </a>
+            <a href="404.html" class="nav-item">
+                <div class="nav-icon">⚔️</div>
+                <span>Combats</span>
+            </a>
+            <a href="Paramètres.html" class="nav-item">
+                <div class="nav-icon">⚙️</div>
+                <span>Paramètres</span>
+            </a>
         </div>
     </nav>
-    <script src="js/accueil.js"></script>
+
+    <script>
+        // Redirection sur clic pour chaque booster
+        document.querySelectorAll('.booster-pack').forEach(pack => {
+            pack.addEventListener('click', () => {
+                const page = pack.getAttribute('data-page');
+                if (page) window.location.href = page;
+            });
+        });
+
+        const track = document.getElementById('boosterTrack');
+let isDragging = false;
+let startX;
+let currentTranslate = 0;
+let prevTranslate = 0;
+let animationID;
+
+track.addEventListener('mousedown', startDrag);
+track.addEventListener('touchstart', startDrag);
+
+track.addEventListener('mousemove', drag);
+track.addEventListener('touchmove', drag);
+
+track.addEventListener('mouseup', endDrag);
+track.addEventListener('mouseleave', endDrag);
+track.addEventListener('touchend', endDrag);
+
+function startDrag(e) {
+    isDragging = true;
+    startX = getX(e) - prevTranslate;
+    track.classList.add('dragging');
+    cancelAnimationFrame(animationID);
+}
+
+function drag(e) {
+    if (!isDragging) return;
+    const x = getX(e);
+    currentTranslate = x - startX;
+    track.style.transform = `translateX(${currentTranslate}px)`;
+}
+
+function endDrag() {
+    if (!isDragging) return;
+    isDragging = false;
+    track.classList.remove('dragging');
+
+    // Seuil pour lancer un booster
+    const throwThreshold = 150; // distance minimale pour déclencher la page
+    if (currentTranslate < -throwThreshold) {
+        // Lancer vers la gauche : ouvre le premier booster
+        const firstPack = track.querySelector('.booster-pack');
+        if (firstPack) {
+            firstPack.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+            firstPack.style.transform = 'translateX(-500px) rotate(-15deg)';
+            firstPack.style.opacity = '0';
+            setTimeout(() => {
+                window.location.href = firstPack.dataset.page;
+            }, 500);
+        }
+    } else if (currentTranslate > throwThreshold) {
+        // Lancer vers la droite : ouvre le dernier booster
+        const lastPack = track.querySelector('.booster-pack:last-child');
+        if (lastPack) {
+            lastPack.style.transition = 'transform 0.5s ease, opacity 0.5s ease';
+            lastPack.style.transform = 'translateX(500px) rotate(15deg)';
+            lastPack.style.opacity = '0';
+            setTimeout(() => {
+                window.location.href = lastPack.dataset.page;
+            }, 500);
+        }
+    } else {
+        // Si pas assez tiré, retour en place
+        currentTranslate = 0;
+        track.style.transition = 'transform 0.3s ease';
+        track.style.transform = `translateX(${currentTranslate}px)`;
+        prevTranslate = currentTranslate;
+        setTimeout(() => {
+            track.style.transition = ''; // supprime la transition pour le prochain drag
+        }, 300);
+    }
+}
+
+function getX(e) {
+    return e.type.includes('mouse') ? e.pageX : e.touches[0].clientX;
+}
+
+    </script>
 </body>
 </html>
