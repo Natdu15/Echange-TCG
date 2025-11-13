@@ -1,0 +1,79 @@
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at 20% 20%, #0f0f10, #000);
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+h1 {
+  font-size: 8rem;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glitch 2s infinite;
+  position: relative;
+  z-index: 1;
+}
+
+p {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+a {
+  margin-top: 2rem;
+  text-decoration: none;
+  color: #fff;
+  border: 2px solid #764ba2;
+  padding: 12px 30px;
+  border-radius: 30px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+a:hover {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  transform: scale(1.1);
+  box-shadow: 0 0 20px #764ba2;
+}
+
+.particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(118, 75, 162, 0.5);
+  animation: float linear infinite;
+}
+
+@keyframes glitch {
+  0% { text-shadow: 2px 2px #764ba2, -2px -2px #667eea; }
+  25% { text-shadow: -2px 2px #764ba2, 2px -2px #667eea; }
+  50% { text-shadow: 3px -3px #667eea, -3px 3px #764ba2; }
+  75% { text-shadow: -1px -1px #764ba2, 1px 1px #667eea; }
+  100% { text-shadow: 2px 2px #764ba2, -2px -2px #667eea; }
+}
+
+@keyframes float {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-110vh); opacity: 0; }
+}
