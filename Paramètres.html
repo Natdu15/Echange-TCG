@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Paramètres - TCG ARENA</title>
-  <link rel="icon" href="logo-tcg.png" type="image/png">
+  <link rel="icon" href="logo-tcg.png" type="logo-tcg.png"">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="css/Paramètres.css">
 </head>
@@ -30,69 +30,85 @@
 
   <!-- Contenu principal -->
   <main class="settings-container">
-    <section class="setting-section">
-      <h2>👤 Profil</h2>
-      <label for="newPseudo">Changer de pseudo :</label>
-      <input type="text" id="newPseudo" placeholder="Nouveau pseudo">
-      <label for="newAvatar">Changer d'avatar :</label>
-      <select id="newAvatar">
-        <option value="🎮">🎮</option>
-        <option value="🐉">🐉</option>
-        <option value="🧙‍♂️">🧙‍♂️</option>
-        <option value="⚔️">⚔️</option>
-        <option value="👑">👑</option>
-      </select>
-      <button class="btn btn-primary" id="saveProfileBtn">Enregistrer</button>
-    </section>
+    <!-- Exemple adapté à ton code -->
+<section class="setting-section" id="profilSection">
+  <h2>👤 Profil</h2>
 
-    <section class="setting-section">
-      <h2>🌗 Apparence</h2>
-      <div class="theme-toggle">
-        <label>
-          <input type="checkbox" id="themeSwitch">
-          Activer le mode clair
-        </label>
-      </div>
-    </section>
+  <label for="newPseudo">Changer de pseudo :</label>
+  <input type="text" id="newPseudo" placeholder="Nouveau pseudo">
 
-    <section class="setting-section">
-      <h2>🔊 Son</h2>
-      <label>
-        <input type="checkbox" id="soundToggle" checked>
-        Activer les sons du jeu
-      </label>
-    </section>
+  <label for="newAvatar">Changer d'avatar :</label>
+  <select id="newAvatar">
+    <option value="🎮">🎮</option>
+    <option value="🐉">🐉</option>
+    <option value="🧙‍♂️">🧙‍♂️</option>
+    <option value="⚔️">⚔️</option>
+    <option value="👑">👑</option>
+  </select>
 
-    <section class="setting-section logout-section">
-      <button class="btn btn-secondary" id="logoutBtn">
-        <i class="fas fa-sign-out-alt"></i> Déconnexion
-      </button>
-    </section>
+  <button class="btn btn-primary" id="saveProfileBtn">Enregistrer</button>
+</section>
+<section class="setting-section" id="idSection">
+  <h2>🆔 Générateur d'ID</h2>
+
+  <!-- Champ affichant le pseudo ou ID généré -->
+  <input type="text" id="generatedIDField" readonly placeholder="Votre ID généré apparaîtra ici">
+
+  <!-- Bouton pour générer un ID/pseudo -->
+  <button class="btn btn-primary" id="generateIDBtn">
+    <i class="fas fa-dice"></i> Générer
+  </button>
+
+  <!-- Bouton pour copier l'ID -->
+  <button class="copy-id-btn" id="copyIDBtn">
+    <i class="fas fa-copy"></i> Copier
+  </button>
+</section>
+
+
+<section class="setting-section" id="apparenceSection">
+  <h2>🌗 Apparence</h2>
+  <div class="theme-toggle">
+    <label>
+      <input type="checkbox" id="themeSwitch">
+      Activer le mode clair
+    </label>
+  </div>
+</section>
+
+<section class="setting-section" id="sonSection">
+  <h2>🔊 Son</h2>
+  <label>
+    <input type="checkbox" id="soundToggle" checked>
+    Activer les sons du jeu
+  </label>
+</section>
+
   </main>
 
     <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-        <div class="nav-items">
-            <div class="nav-item active" data-tab="home">
-                <i class="nav-icon fas fa-home"></i>
-                <span class="nav-label">Accueil</span>
-            </div>
-            <div class="nav-item" data-tab="inventory">
-                <i class="nav-icon fas fa-box"></i>
-                <span class="nav-label">Inventaire</span>
-            </div>
-            <div class="nav-item" data-tab="trades">
-                <i class="nav-icon fas fa-exchange-alt"></i>
-                <span class="nav-label">Échanges</span>
-            </div>
-            <div class="nav-item" data-tab="battles">
-                <i class="nav-icon fas fa-swords"></i>
-                <span class="nav-label">Combats</span>
-            </div>
-            <div class="nav-item" data-tab="settings">
-                <i class="nav-icon fas fa-cog"></i>
-                <span class="nav-label">Paramètres</span>
-            </div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="accueil.html" class="nav-item">
+                <div class="nav-icon">🏠</div>
+                <span>Accueil</span>
+            </a>
+            <a href="inventaire.html" class="nav-item">
+                <div class="nav-icon">🎒</div>
+                <span>Inventaire</span>
+            </a>
+            <a href="echange.html" class="nav-item ">
+                <div class="nav-icon">🔄</div>
+                <span>Échanges</span>
+            </a>
+            <a href="404.html" class="nav-item ">
+                <div class="nav-icon">⚔️</div>
+                <span>Combats</span>
+            </a>
+            <a href="Paramètres.html" class="nav-item active">
+                <div class="nav-icon">⚙️</div>
+                <span>Paramètres</span>
+            </a>
         </div>
     </nav>
 
