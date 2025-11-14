@@ -422,10 +422,11 @@
             color: #6b7280;
         }
 
+        /* Bottom Navigation */
         .navbar {
             background-color: #0f1419;
             padding: 7px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 -2px 8px rgba(0,0,0,0.3);
             bottom: 0;
             left: 0;
             right: 0;
