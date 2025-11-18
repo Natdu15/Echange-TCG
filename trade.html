@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading de Cartes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #7e22ce 50%, #1e293b 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #cbd5e1;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            background: #1e293b;
+            border: 2px solid #a855f7;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #c084fc;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a855f7, #ec4899);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.5);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-back {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+        }
+
+        .friend-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .friend-card {
+            background: #1e293b;
+            border: 2px solid #a855f7;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .friend-card:hover {
+            background: #2d3748;
+            border-color: #c084fc;
+            transform: translateY(-2px);
+        }
+
+        .friend-card.offline {
+            opacity: 0.5;
+            cursor: not-allowed;
+            border-color: #4b5563;
+        }
+
+        .friend-card.offline:hover {
+            transform: none;
+        }
+
+        .friend-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .friend-avatar {
+            font-size: 2.5rem;
+        }
+
+        .friend-status {
+            font-size: 0.9rem;
+        }
+
+        .online {
+            color: #10b981;
+        }
+
+        .offline-text {
+            color: #6b7280;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .card-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-item {
+            background: #1e293b;
+            border: 2px solid #a855f7;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .card-item:hover {
+            border-color: #c084fc;
+            transform: scale(1.02);
+        }
+
+        .card-item.selected {
+            border-color: white;
+            border-width: 3px;
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255,255,255,0.3);
+        }
+
+        .card-item.common { background: linear-gradient(135deg, #6b7280, #4b5563); }
+        .card-item.rare { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .card-item.ultra-rare { background: linear-gradient(135deg, #a855f7, #9333ea); }
+        .card-item.legendary { background: linear-gradient(135deg, #eab308, #f59e0b); }
+
+        .card-emoji {
+            font-size: 3rem;
+        }
+
+        .card-info {
+            flex: 1;
+        }
+
+        .card-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .card-stats {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .check-icon {
+            font-size: 2rem;
+        }
+
+        .trade-preview {
+            background: #1e293b;
+            border: 2px solid #eab308;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .trade-cards {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .trade-card-big {
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .trade-card-big .card-emoji {
+            font-size: 5rem;
+            margin-bottom: 15px;
+        }
+
+        .trade-card-big .card-name {
+            font-size: 1.8rem;
+        }
+
+        .trade-arrow {
+            font-size: 4rem;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .waiting-screen {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .waiting-icon {
+            font-size: 8rem;
+            margin-bottom: 30px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .success-screen {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .success-icon {
+            font-size: 10rem;
+            margin-bottom: 30px;
+            animation: bounce 1s infinite;
+        }
+
+        .trade-animation {
+            position: relative;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            overflow: hidden;
+            margin: 50px 0;
+        }
+
+        .animated-card {
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            transition: all 2s ease-in-out;
+        }
+
+        .animated-card.move-right {
+            transform: translateX(600px) scale(0.7);
+            opacity: 0;
+        }
+
+        .animated-card.move-left {
+            transform: translateX(-600px) scale(0.7);
+            opacity: 0;
+        }
+
+        .center-star {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10rem;
+            animation: spin 2s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes spin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .trade-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Page 1: Recherche d'amis -->
+        <div id="searchPage">
+            <h1>🔄 Rechercher un Ami</h1>
+            
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Rechercher un ami...">
+            </div>
+
+            <button class="btn btn-success" onclick="simulateReceivedOffer()">
+                📬 Simuler une Offre Reçue
+            </button>
+
+            <div id="friendList" class="friend-list" style="margin-top: 20px;">
+                <!-- Les amis seront ajoutés ici par JS -->
+            </div>
+        </div>
+
+        <!-- Page 2: Proposer un trade -->
+        <div id="proposePage" class="hidden">
+            <button class="btn btn-back" onclick="goToSearch()">← Retour</button>
+            <h1>Trader avec <span id="friendName"></span></h1>
+            <p class="subtitle">Sélectionnez vos cartes pour créer une offre</p>
+
+            <div class="cards-grid">
+                <div class="card-section">
+                    <h2>🃏 Mes Cartes</h2>
+                    <div id="myCardsList"></div>
+                </div>
+
+                <div class="card-section">
+                    <h2><span id="theirAvatar"></span> Cartes de <span id="theirName"></span></h2>
+                    <div id="theirCardsList"></div>
+                </div>
+            </div>
+
+            <button id="sendTradeBtn" class="btn btn-primary hidden" onclick="sendTrade()" style="margin-top: 30px;">
+                📤 Envoyer l'Offre de Trade
+            </button>
+        </div>
+
+        <!-- Page 3: En attente -->
+        <div id="waitingPage" class="hidden">
+            <div class="waiting-screen">
+                <div class="waiting-icon">⏳</div>
+                <h1>En attente de <span id="waitingFriendName"></span>...</h1>
+                <p class="subtitle">Votre offre a été envoyée</p>
+            </div>
+        </div>
+
+        <!-- Page 4: Offre reçue -->
+        <div id="receivedPage" class="hidden">
+            <h1>📬 Offre Reçue !</h1>
+            <p class="subtitle">Alexandre vous propose un trade</p>
+
+            <div class="trade-preview">
+                <div class="trade-cards">
+                    <div id="receivedTheirCard" class="trade-card-big"></div>
+                    <div class="trade-arrow">🔄<br>ÉCHANGE</div>
+                    <div id="receivedMyCard" class="trade-card-big"></div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-danger" onclick="declineTrade()">❌ Refuser</button>
+                <button class="btn btn-success" onclick="respondToTrade()">📤 Répondre au Trade</button>
+            </div>
+        </div>
+
+        <!-- Page 5: Négociation -->
+        <div id="negotiatePage" class="hidden">
+            <h1>⚖️ Validation du Trade</h1>
+            <p class="subtitle">Les deux parties doivent accepter</p>
+
+            <div class="trade-preview">
+                <div class="trade-cards">
+                    <div id="negotiateMyCard" class="trade-card-big"></div>
+                    <div class="trade-arrow pulse">🤝<br>EN ATTENTE</div>
+                    <div id="negotiateTheirCard" class="trade-card-big"></div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-danger" onclick="declineTrade()">❌ Refuser</button>
+                <button class="btn btn-success" onclick="acceptTrade()">✅ Accepter</button>
+            </div>
+        </div>
+
+        <!-- Page 6: Animation -->
+        <div id="animationPage" class="hidden">
+            <h1 class="pulse">✨ Trade Accepté ! ✨</h1>
+            
+            <div class="trade-animation">
+                <div id="animMyCard" class="animated-card"></div>
+                <div id="animTheirCard" class="animated-card"></div>
+                <div class="center-star">⭐</div>
+            </div>
+        </div>
+
+        <!-- Page 7: Succès -->
+        <div id="successPage" class="hidden">
+            <div class="success-screen">
+                <div class="success-icon">🎉</div>
+                <h1>Trade Réussi !</h1>
+                <p class="subtitle" style="font-size: 1.5rem; margin-bottom: 30px;">
+                    <span id="receivedCardName"></span> a été ajouté à votre collection
+                </p>
+                <button class="btn btn-primary" onclick="newTrade()">Nouveau Trade</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données
+        const friends = [
+            { id: 1, name: 'Alexandre', avatar: '🎮', online: true },
+            { id: 2, name: 'Sophie', avatar: '⭐', online: true },
+            { id: 3, name: 'Lucas', avatar: '🔥', online: false },
+            { id: 4, name: 'Emma', avatar: '💎', online: true },
+            { id: 5, name: 'Thomas', avatar: '⚡', online: false }
+        ];
+
+        const myCards = [
+            { id: 1, name: 'Pikachu', rarity: 'rare', emoji: '⚡', power: 120 },
+            { id: 2, name: 'Charizard', rarity: 'ultra-rare', emoji: '🔥', power: 200 },
+            { id: 3, name: 'Mewtwo', rarity: 'legendary', emoji: '💜', power: 250 },
+            { id: 4, name: 'Bulbasaur', rarity: 'common', emoji: '🌱', power: 80 }
+        ];
+
+        const theirCards = [
+            { id: 5, name: 'Dragonite', rarity: 'rare', emoji: '🐉', power: 180 },
+            { id: 6, name: 'Articuno', rarity: 'legendary', emoji: '❄️', power: 220 },
+            { id: 7, name: 'Squirtle', rarity: 'common', emoji: '💧', power: 90 }
+        ];
+
+        let selectedFriend = null;
+        let selectedMyCard = null;
+        let selectedTheirCard = null;
+
+        // Initialisation
+        function init() {
+            displayFriends();
+            document.getElementById('searchInput').addEventListener('input', handleSearch);
+        }
+
+        function displayFriends(filter = '') {
+            const list = document.getElementById('friendList');
+            list.innerHTML = '';
+
+            friends.filter(f => f.name.toLowerCase().includes(filter.toLowerCase())).forEach(friend => {
+                const card = document.createElement('div');
+                card.className = `friend-card ${!friend.online ? 'offline' : ''}`;
+                card.onclick = () => friend.online && selectFriend(friend);
+                
+                card.innerHTML = `
+                    <div class="friend-info">
+                        <div class="friend-avatar">${friend.avatar}</div>
+                        <div>
+                            <div class="card-name">${friend.name}</div>
+                            <div class="friend-status ${friend.online ? 'online' : 'offline-text'}">
+                                ${friend.online ? '🟢 En ligne' : '⚫ Hors ligne'}
+                            </div>
+                        </div>
+                    </div>
+                    ${friend.online ? '<div style="font-size: 1.5rem;">→</div>' : ''}
+                `;
+                
+                list.appendChild(card);
+            });
+        }
+
+        function handleSearch(e) {
+            displayFriends(e.target.value);
+        }
+
+        function selectFriend(friend) {
+            selectedFriend = friend;
+            document.getElementById('friendName').textContent = friend.name;
+            document.getElementById('theirName').textContent = friend.name;
+            document.getElementById('theirAvatar').textContent = friend.avatar;
+            
+            displayMyCards();
+            displayTheirCards();
+            
+            showPage('proposePage');
+        }
+
+        function displayMyCards() {
+            const list = document.getElementById('myCardsList');
+            list.innerHTML = '';
+
+            myCards.forEach(card => {
+                const cardEl = createCardElement(card, true);
+                list.appendChild(cardEl);
+            });
+        }
+
+        function displayTheirCards() {
+            const list = document.getElementById('theirCardsList');
+            list.innerHTML = '';
+
+            theirCards.forEach(card => {
+                const cardEl = createCardElement(card, false);
+                list.appendChild(cardEl);
+            });
+        }
+
+        function createCardElement(card, isMine) {
+            const cardEl = document.createElement('div');
+            cardEl.className = `card-item ${card.rarity}`;
+            cardEl.onclick = () => isMine ? selectMyCard(card) : selectTheirCard(card);
+            
+            const isSelected = isMine ? (selectedMyCard?.id === card.id) : (selectedTheirCard?.id === card.id);
+            if (isSelected) cardEl.classList.add('selected');
+            
+            cardEl.innerHTML = `
+                <div class="card-emoji">${card.emoji}</div>
+                <div class="card-info">
+                    <div class="card-name">${card.name}</div>
+                    <div class="card-stats">⚡ ${card.power} | 🎴 ${card.rarity}</div>
+                </div>
+                ${isSelected ? '<div class="check-icon">✓</div>' : ''}
+            `;
+            
+            return cardEl;
+        }
+
+        function selectMyCard(card) {
+            selectedMyCard = card;
+            displayMyCards();
+            updateSendButton();
+        }
+
+        function selectTheirCard(card) {
+            selectedTheirCard = card;
+            displayTheirCards();
+            updateSendButton();
+        }
+
+        function updateSendButton() {
+            const btn = document.getElementById('sendTradeBtn');
+            if (selectedMyCard && selectedTheirCard) {
+                btn.classList.remove('hidden');
+            } else {
+                btn.classList.add('hidden');
+            }
+        }
+
+        function sendTrade() {
+            document.getElementById('waitingFriendName').textContent = selectedFriend.name;
+            showPage('waitingPage');
+            
+            setTimeout(() => {
+                showNegotiation();
+            }, 2000);
+        }
+
+        function simulateReceivedOffer() {
+            selectedMyCard = myCards[0];
+            selectedTheirCard = theirCards[0];
+            selectedFriend = friends[0];
+            
+            showReceivedOffer();
+        }
+
+        function showReceivedOffer() {
+            document.getElementById('receivedTheirCard').innerHTML = createBigCard(selectedTheirCard);
+            document.getElementById('receivedMyCard').innerHTML = createBigCard(selectedMyCard);
+            showPage('receivedPage');
+        }
+
+        function respondToTrade() {
+            showNegotiation();
+        }
+
+        function showNegotiation() {
+            document.getElementById('negotiateMyCard').innerHTML = createBigCard(selectedMyCard);
+            document.getElementById('negotiateTheirCard').innerHTML = createBigCard(selectedTheirCard);
+            showPage('negotiatePage');
+        }
+
+        function createBigCard(card) {
+            return `
+                <div class="card-emoji">${card.emoji}</div>
+                <div class="card-name">${card.name}</div>
+                <div class="card-stats">⚡ ${card.power}</div>
+            `;
+        }
+
+        function acceptTrade() {
+            showPage('animationPage');
+            
+            const myCardEl = document.getElementById('animMyCard');
+            const theirCardEl = document.getElementById('animTheirCard');
+            
+            myCardEl.className = `animated-card ${selectedMyCard.rarity}`;
+            myCardEl.innerHTML = createBigCard(selectedMyCard);
+            
+            theirCardEl.className = `animated-card ${selectedTheirCard.rarity}`;
+            theirCardEl.innerHTML = createBigCard(selectedTheirCard);
+            
+            setTimeout(() => {
+                myCardEl.classList.add('move-right');
+                theirCardEl.classList.add('move-left');
+            }, 100);
+            
+            setTimeout(() => {
+                document.getElementById('receivedCardName').textContent = selectedTheirCard.name;
+                showPage('successPage');
+            }, 2500);
+        }
+
+        function declineTrade() {
+            newTrade();
+        }
+
+        function newTrade() {
+            selectedFriend = null;
+            selectedMyCard = null;
+            selectedTheirCard = null;
+            goToSearch();
+        }
+
+        function goToSearch() {
+            showPage('searchPage');
+        }
+
+        function showPage(pageId) {
+            const pages = ['searchPage', 'proposePage', 'waitingPage', 'receivedPage', 'negotiatePage', 'animationPage', 'successPage'];
+            pages.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+        }
+
+        // Démarrage
+        init();
+    </script>
+</body>
+</html>
