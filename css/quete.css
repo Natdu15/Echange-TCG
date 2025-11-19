@@ -1,4 +1,4 @@
-* {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -229,11 +229,8 @@
             border: 1px solid rgba(122, 97, 241, 0.3);
         }
 
-        .reward-gem {
-            width: 20px;
-            height: 20px;
-            vertical-align: middle;
-            margin: 0 3px;
+        .reward-icon {
+            font-size: 20px;
         }
 
         .reward-text {
