@@ -12,22 +12,24 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// Inscription
+// === INSCRIPTION (pseudo + email + mdp) ===
 app.post('/auth/register', async (req, res) => {
-  const { email, password } = req.body;
+  const { username, email, password } = req.body;
+  if (!username || !email || !password) return res.status(400).json({ error: 'Tous les champs requis' });
+
   const hash = await bcrypt.hash(password, 10);
   try {
     const result = await pool.query(
-      'INSERT INTO users(email, password) VALUES($1, $2) RETURNING id',
-      [email.toLowerCase(), hash]
+      'INSERT INTO users(username, email, password) VALUES($1, $2, $3) RETURNING id',
+      [username, email.toLowerCase(), hash]
     );
     res.json({ success: true, userId: result.rows[0].id });
   } catch (e) {
-    res.status(400).json({ error: 'Email déjà utilisé' });
+    res.status(400).json({ error: 'Pseudo ou email déjà utilisé' });
   }
 });
 
-// Connexion
+// === CONNEXION ===
 app.post('/auth/login', async (req, res) => {
   const { email, password } = req.body;
   const { rows } = await pool.query('SELECT id, password FROM users WHERE email = $1', [email.toLowerCase()]);
@@ -37,7 +39,7 @@ app.post('/auth/login', async (req, res) => {
   res.json({ success: true, userId: rows[0].id });
 });
 
-// Débloquer une carte
+// === DÉBLOQUER CARTE ===
 app.post('/api/unlock', async (req, res) => {
   const { userId, carteId } = req.body;
   await pool.query(
@@ -48,7 +50,7 @@ app.post('/api/unlock', async (req, res) => {
   res.json({ success: true });
 });
 
-// Récupérer collection
+// === CHARGER COLLECTION ===
 app.get('/api/collection', async (req, res) => {
   const { userId } = req.query;
   const { rows } = await pool.query('SELECT carte_id, quantite FROM collection WHERE user_id = $1', [userId]);
@@ -56,4 +58,4 @@ app.get('/api/collection', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`API Maximus TCG prête sur port ${PORT}`));
+app.listen(PORT, () => console.log(`API Maximus TCG prête → port ${PORT}`));
