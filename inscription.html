@@ -1,25 +1,46 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="logo-tcg.png" href="logo-tcg.png">
-  <title>Inscription Maximus TCG</title>
-  <link rel="stylesheet" href="css/index.css">
-</head>
-<body>
-  <div class="background-jeux"></div>
-  <div class="container">
-    <h2>Créer un compte</h2>
-    <form id="registerForm">
-      <input type="text" id="username" placeholder="Pseudo" required>
-      <input type="email" id="email" placeholder="Email" required>
-      <input type="password" id="password" placeholder="Mot de passe" required>
-      <input type="password" id="confirmPassword" placeholder="Confirmer le mot de passe" required>
-      <button type="submit">S’inscrire</button>
-    </form>
-    <p>Déjà un compte ? <a href="index.html">Se connecter</a></p>
-  </div>
-  <script src="js/inscription.js"></script>
-</body>
-</html>
+<!DOCTYPE html><html lang="fr"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="logo-tcg.png">
+<title>Inscription Maximus TCG</title>
+<link rel="stylesheet" href="css/index.css">
+</head><body>
+<div class="background-jeux"></div>
+<div class="container">
+  <h2>Créer un compte</h2>
+  <form id="registerForm">
+    <input type="text" id="username" placeholder="Pseudo" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Mot de passe" required>
+    <input type="password" id="confirmPassword" placeholder="Confirmer le mot de passe" required>
+    <button type="submit">S’inscrire</button>
+  </form>
+  <p>Déjà un compte ? <a href="index.html">Se connecter</a></p>
+</div>
+
+<script>
+const API_URL = 'https://tcg-api-xxxx.koyeb.app';
+
+document.getElementById('registerForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const username = document.getElementById('username').value.trim();
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const password = document.getElementById('password').value;
+  const confirm = document.getElementById('confirmPassword').value;
+
+  if (password !== confirm) return alert('Mots de passe différents');
+  if (password.length < 6) return alert('Mot de passe trop court');
+
+  const res = await fetch(`${API_URL}/auth/register`, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username, email, password})
+  });
+  const data = await res.json();
+  if (data.success) {
+    alert('Compte créé !');
+    localStorage.setItem('userId', data.userId);
+    localStorage.setItem('username', username);
+    window.location.href = 'jeu.html';
+  } else alert(data.error);
+});
+</script>
+</body></html>
