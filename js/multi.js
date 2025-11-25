@@ -24,8 +24,6 @@
             { id: 18, name: "Paladin", rarity: "legendary", image: "cartes-pokémon/tentation.png" },
             { id: 19, name: "Paladin", rarity: "legendary", image: "cartes-pokémon/madaaaaaaaaaaame.png" },
         ];
-
-        // Create animated bubbles
         function createBubbles() {
             const bubblesContainer = document.getElementById('bubbles');
             const bubbleCount = 15;
