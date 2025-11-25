@@ -1,8 +1,9 @@
-        * {
+* {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-        } 
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #0a0a0a;
@@ -228,8 +229,11 @@
             border: 1px solid rgba(122, 97, 241, 0.3);
         }
 
-        .reward-icon {
-            font-size: 20px;
+        .reward-gem {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin: 0 3px;
         }
 
         .reward-text {
@@ -344,4 +348,3 @@
                 padding: 10px 12px;
             }
         }
-
