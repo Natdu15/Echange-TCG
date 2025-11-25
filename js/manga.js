@@ -13,7 +13,6 @@
 
         ];
 
-      
 // Create animated bubbles
 function createBubbles() {
     const bubblesContainer = document.getElementById('bubbles');
