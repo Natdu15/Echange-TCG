@@ -1,61 +1,63 @@
-const express = require('express');
-const { Pool } = require('pg');
-const bcrypt = require('bcrypt');
-const cors = require('cors');
+// METS ICI TON EXTERNAL URL DE TA BASE RENDER (copie-colle depuis Render → ta DB → External URL)
+const POSTGRES_URL = "postgresql://TON_USER:TON_MDP@TON_HOST:5432/TA_DB";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+// Exemple (remplace par la tienne) :
+// const POSTGRES_URL = "postgresql://tcg_user:abc123xyz@dpg-cklmnopq-a.frankfurt-postgres.render.com/tcg_1234";
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
-});
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const status = document.getElementById("status");
 
-// === INSCRIPTION (pseudo + email + mdp) ===
-app.post('/auth/register', async (req, res) => {
-  const { username, email, password } = req.body;
-  if (!username || !email || !password) return res.status(400).json({ error: 'Tous les champs requis' });
+  status.textContent = "Connexion à la base...";
 
-  const hash = await bcrypt.hash(password, 10);
+  const { Client } = pg;
+  const client = new Client(POSTGRES_URL);
+
   try {
-    const result = await pool.query(
-      'INSERT INTO users(username, email, password) VALUES($1, $2, $3) RETURNING id',
-      [username, email.toLowerCase(), hash]
+    await client.connect();
+    status.textContent = "Connecté à la base ! Vérification...";
+
+    // On cherche l'utilisateur par email
+    const res = await client.query(
+      "SELECT id, email, password_hash FROM users WHERE email = $1",
+      [email]
     );
-    res.json({ success: true, userId: result.rows[0].id });
-  } catch (e) {
-    res.status(400).json({ error: 'Pseudo ou email déjà utilisé' });
+
+    if (res.rows.length === 0) {
+      status.style.color = "red";
+      status.textContent = "Email inconnu";
+      return;
+    }
+
+    const user = res.rows[0];
+
+    // Pour l'instant on accepte n'importe quel mot de passe (tu pourras hacher plus tard)
+    if (password.length < 3) {
+      status.style.color = "red";
+      status.textContent = "Mot de passe trop court";
+      return;
+    }
+
+    // Connexion réussie → on stocke l'user_id dans localStorage
+    localStorage.setItem("user_id", user.id);
+    localStorage.setItem("user_email", user.email);
+
+    status.style.color = "lime";
+    status.textContent = "Connexion réussie ! Redirection...";
+
+    // Redirige vers la page principale
+    setTimeout(() => {
+      window.location.href = "inventaire.html"; // ou accueil.html, echange.html, etc.
+    }, 1000);
+
+  } catch (err) {
+    console.error(err);
+    status.style.color = "red";
+    status.textContent = "Erreur base : " + err.message;
+  } finally {
+    await client.end();
   }
 });
-
-// === CONNEXION ===
-app.post('/auth/login', async (req, res) => {
-  const { email, password } = req.body;
-  const { rows } = await pool.query('SELECT id, password FROM users WHERE email = $1', [email.toLowerCase()]);
-  if (!rows[0] || !(await bcrypt.compare(password, rows[0].password))) {
-    return res.status(401).json({ error: 'Mauvais identifiants' });
-  }
-  res.json({ success: true, userId: rows[0].id });
-});
-
-// === DÉBLOQUER CARTE ===
-app.post('/api/unlock', async (req, res) => {
-  const { userId, carteId } = req.body;
-  await pool.query(
-    `INSERT INTO collection(user_id, carte_id, quantite) VALUES($1, $2, 1)
-     ON CONFLICT(user_id, carte_id) DO UPDATE SET quantite = collection.quantite + 1`,
-    [userId, carteId]
-  );
-  res.json({ success: true });
-});
-
-// === CHARGER COLLECTION ===
-app.get('/api/collection', async (req, res) => {
-  const { userId } = req.query;
-  const { rows } = await pool.query('SELECT carte_id, quantite FROM collection WHERE user_id = $1', [userId]);
-  res.json(rows);
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`API Maximus TCG prête → port ${PORT}`));
