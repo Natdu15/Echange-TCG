@@ -1,4 +1,3 @@
-// Card database
         const cardDatabase = [
             // Common cards
             { id: 1, name: "Mage de Feu", rarity: "common", image: "cartes-pokémon/bios.png" },
