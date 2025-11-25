@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pack Standard - TCG</title>
     <link rel="icon" type="logo-tcg.png" href="logo-tcg.png">
-    <link rel="stylesheet" href="css/extension1-standard.css">
+    <link rel="stylesheet" href="css/universite.css">
 
 </head>
+
 <body>
     <!-- Animated Background Bubbles -->
     <div id="bubbles"></div>
@@ -17,18 +19,19 @@
 
     <!-- Info Display -->
     <div class="info-display">
-        <h3>Pack Standard</h3>
+        <h3>Pack UNIVERSITY</h3>
         <p>3 cartes par pack</p>
         <p>Cliquez pour ouvrir</p>
     </div>
+
 
     <!-- Main Container -->
     <div class="main-container" id="mainContainer">
         <div class="booster-pack" id="mainBooster" onclick="selectBooster()">
             <div class="pack-front">
                 <div class="pack-logo">🎴</div>
-                <div class="pack-title">Pack Standard</div>
-                <div class="pack-subtitle">Série Légendaire</div>
+                <div class="pack-title">Pack UNIVERSITY</div>
+                <div class="pack-subtitle">Série Professeur</div>
             </div>
         </div>
     </div>
@@ -36,14 +39,14 @@
     <!-- Opening Container -->
     <div class="opening-container" id="openingContainer">
         <div class="opening-instruction" id="instruction">Glissez vers la droite pour ouvrir →</div>
-        
+
         <div class="opening-pack" id="openingPack">
             <div class="pack-wrapper" id="packWrapper">
                 <div class="booster-pack">
                     <div class="pack-front">
                         <div class="pack-logo">🎴</div>
-                        <div class="pack-title">Pack Standard</div>
-                        <div class="pack-subtitle">Série Légendaire</div>
+                        <div class="pack-title">Pack UNIVERSITY</div>
+                        <div class="pack-subtitle">Série Professeur</div>
                     </div>
                 </div>
             </div>
@@ -51,7 +54,7 @@
                 <div class="progress-bar" id="progressBar"></div>
             </div>
         </div>
-        
+
         <!-- Cards Display -->
         <div class="cards-container" id="cardsContainer">
             <!-- Cards will appear here -->
@@ -61,7 +64,30 @@
     <!-- Finish Button -->
     <button class="finish-button" id="finishButton" onclick="finishOpening()">→</button>
 
-<script src="js/extension1-standard.js"></script>
-</body>
-</html>
+    <!-- Multi-Pack Mode (20 packs) -->
+    <div class="multi-pack-mode" id="multiPackMode">
+        <div class="multi-pack-header">
+            <h1>🎁 Ouverture de 20 Packs</h1>
+            <p style="color: #aaa; margin-bottom: 15px;">60 cartes au total (3 par pack)</p>
+            <button class="btn-open-all" id="openAllBtn" onclick="openAllMultiPacks()">Ouvrir tous les packs</button>
+        </div>
 
+        <div class="progress-container">
+            <div class="progress-fill" id="multiProgressBar" style="width: 0%">0/20</div>
+        </div>
+
+        <div class="packs-grid" id="packsGrid"></div>
+
+        <div class="multi-results" id="multiResults" style="display: none;">
+            <h2>🎉 Résultats (60 cartes)</h2>
+            <div class="rarity-count" id="rarityCount"></div>
+            <div id="cardResultsMulti"></div>
+        </div>
+
+        <button class="btn-close-multi" onclick="closeMultiPackMode()">Retour</button>
+    </div>
+
+    <script src="js/universite.js"></script>
+</body>
+
+</html>
