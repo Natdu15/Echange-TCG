@@ -21,8 +21,6 @@
         }
 
         createBubbles();
-
-        // Quest data structure
         const questsData = {
             daily: [
                 {
