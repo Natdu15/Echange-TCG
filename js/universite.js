@@ -25,7 +25,6 @@ const cardDatabase = [
     { id: 18, name: "Paladin", rarity: "legendary", image: "cartes-pokémon/tentation.png" },
     { id: 19, name: "Paladin", rarity: "legendary", image: "cartes-pokémon/madaaaaaaaaaaame.png" },
 
-
 ];
 
 // Create animated bubbles
