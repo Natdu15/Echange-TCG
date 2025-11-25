@@ -13,7 +13,6 @@
                 bubble.style.animationDuration = `${Math.random() * 10 + 10}s`;
                 bubble.style.animationDelay = `${Math.random() * 5}s`;
                 
-                // Random color between blue and violet
                 const hue = Math.random() * 60 + 240; // 240-300 (blue to violet)
                 bubble.style.background = `radial-gradient(circle at 30% 30%, hsla(${hue}, 70%, 60%, 0.3), hsla(${hue}, 70%, 50%, 0.1))`;
                 
