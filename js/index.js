@@ -1,7 +1,8 @@
-// backend/index.js
 import express from "express";
 import cors from "cors";
 import pkg from "pg";
+import crypto from "crypto";
+
 const { Pool } = pkg;
 
 const app = express();
@@ -14,13 +15,20 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// ========== ROUTE LOGIN ==========
+// Fonction de hash SHA-256
+function hashPassword(password) {
+  return crypto.createHash("sha256").update(password).digest("hex");
+}
+
+// ============================
+// ROUTE LOGIN
+// ============================
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const result = await pool.query(
-      "SELECT id, email FROM users WHERE email = $1",
+      "SELECT id, email, password FROM users WHERE email = $1",
       [email]
     );
 
@@ -28,13 +36,18 @@ app.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Email inconnu" });
     }
 
-    if (password.length < 3) {
-      return res.status(400).json({ error: "Mot de passe trop court" });
+    const user = result.rows[0];
+
+    if (user.password !== hashPassword(password)) {
+      return res.status(400).json({ error: "Mot de passe incorrect" });
     }
 
     res.json({
       success: true,
-      user: result.rows[0]
+      user: {
+        id: user.id,
+        email: user.email
+      }
     });
 
   } catch (err) {
@@ -42,7 +55,9 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Exemple route protégée
+// ============================
+// ROUTE PROTÉGÉE GET USER
+// ============================
 app.get("/user/:id", async (req, res) => {
   try {
     const result = await pool.query(
@@ -55,10 +70,11 @@ app.get("/user/:id", async (req, res) => {
     }
 
     res.json(result.rows[0]);
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log("Backend OK -> port " + port));
+app.listen(port, () => console.log("Backend prêt sur le port " + port));
