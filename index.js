@@ -1,63 +1,54 @@
-// METS ICI TON EXTERNAL URL DE TA BASE RENDER (copie-colle depuis Render → ta DB → External URL)
-const POSTGRES_URL = "postgresql://TON_USER:TON_MDP@TON_HOST:5432/TA_DB";
+// index.js (BACKEND NODE)
+// ========================
 
-// Exemple (remplace par la tienne) :
-// const POSTGRES_URL = "postgresql://tcg_user:abc123xyz@dpg-cklmnopq-a.frankfurt-postgres.render.com/tcg_1234";
+import express from "express";
+import cors from "cors";
+import pkg from "pg";
+const { Pool } = pkg;
 
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const status = document.getElementById("status");
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-  status.textContent = "Connexion à la base...";
+// Render fournit DATABASE_URL automatiquement
+// Sinon, utilise ton External URL en local
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+});
 
-  const { Client } = pg;
-  const client = new Client(POSTGRES_URL);
+// Route de login
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
 
   try {
-    await client.connect();
-    status.textContent = "Connecté à la base ! Vérification...";
-
-    // On cherche l'utilisateur par email
-    const res = await client.query(
-      "SELECT id, email, password_hash FROM users WHERE email = $1",
+    const result = await pool.query(
+      "SELECT id, email FROM users WHERE email = $1",
       [email]
     );
 
-    if (res.rows.length === 0) {
-      status.style.color = "red";
-      status.textContent = "Email inconnu";
-      return;
+    if (result.rows.length === 0) {
+      return res.status(400).json({ error: "Email inconnu" });
     }
 
-    const user = res.rows[0];
-
-    // Pour l'instant on accepte n'importe quel mot de passe (tu pourras hacher plus tard)
+    // (Pour le moment mot de passe non vérifié)
     if (password.length < 3) {
-      status.style.color = "red";
-      status.textContent = "Mot de passe trop court";
-      return;
+      return res.status(400).json({ error: "Mot de passe trop court" });
     }
 
-    // Connexion réussie → on stocke l'user_id dans localStorage
-    localStorage.setItem("user_id", user.id);
-    localStorage.setItem("user_email", user.email);
-
-    status.style.color = "lime";
-    status.textContent = "Connexion réussie ! Redirection...";
-
-    // Redirige vers la page principale
-    setTimeout(() => {
-      window.location.href = "inventaire.html"; // ou accueil.html, echange.html, etc.
-    }, 1000);
+    res.json({
+      success: true,
+      user: result.rows[0]
+    });
 
   } catch (err) {
     console.error(err);
-    status.style.color = "red";
-    status.textContent = "Erreur base : " + err.message;
-  } finally {
-    await client.end();
+    res.status(500).json({ error: err.message });
   }
+});
+
+// Render → PORT fourni automatiquement
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log("Serveur backend OK sur port " + port);
 });
