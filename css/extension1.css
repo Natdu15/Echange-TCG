@@ -1,4 +1,4 @@
-* {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -255,7 +255,6 @@
             background-color: rgba(15, 20, 25, 0.95);
             padding: 12px 0;
             box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
-            position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
