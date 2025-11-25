@@ -19,7 +19,7 @@ const cardDatabase = [
 
     // Legendary cards (10% chance)
     { id: 14, name: "Dragon Légendaire", rarity: "legendary", image: "cartes-pokémon/dieu.png" },
-    { id: 15, name: "Roi des Démons", rarity: "legendary", image: "cartes-pokémon/Grollemund.png" },
+    { id: 15, name: "Roi des Démons", rarity: "legendary", image: "cartes-pokémon/grollemund.png" },
     { id: 16, name: "Paladin", rarity: "legendary", image: "cartes-pokémon/pretesse-python.png" },
     { id: 17, name: "Paladin", rarity: "legendary", image: "cartes-pokémon/roux.png" },
     { id: 18, name: "Paladin", rarity: "legendary", image: "cartes-pokémon/tentation.png" },
