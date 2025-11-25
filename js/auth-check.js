@@ -1,6 +1,3 @@
-// auth-check.js - Vérifier si l'utilisateur est connecté
-// À inclure au début de chaque page protégée
-
 (function() {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     const currentUser = localStorage.getItem('currentUser');
