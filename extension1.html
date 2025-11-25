@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extension - TCG</title>
     <link rel="stylesheet" href="css/extension1.css">
 </head>
+
 <body>
     <!-- Animated Background Bubbles -->
     <div id="bubbles"></div>
@@ -25,12 +27,16 @@
                 <div class="stat-label">Cartes</div>
             </div>
             <div class="stat-item">
-                <div class="stat-value">5</div>
+                <div class="stat-value">3</div>
                 <div class="stat-label">Packs</div>
             </div>
             <div class="stat-item">
                 <div class="stat-value">12</div>
                 <div class="stat-label">Ultra Rares</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">3</div>
+                <div class="stat-label">thèmes différents</div>
             </div>
         </div>
     </header>
@@ -45,61 +51,48 @@
             </div>
 
             <!-- Pack Cards -->
-            <div class="pack-card active" data-index="0" onclick="window.location.href='extension1-standard.html'">
+            <div class="pack-card active" data-index="0" onclick="window.location.href='universite.html'">
                 <div class="pack-image">🎴</div>
-                <div class="pack-name">Pack Standard</div>
-                <div class="pack-rarity">Commun</div>
+                <div class="pack-name">Pack UNIVERSITY</div>
+                <div class="pack-rarity">3,2,1</div>
             </div>
 
 
-            <div class="pack-card right" data-index="1">
+            <div class="pack-card right" data-index="1" onclick="window.location.href='manga.html'">
                 <div class="pack-image">💎</div>
-                <div class="pack-name">Pack Premium</div>
-                <div class="pack-rarity">Rare</div>
+                <div class="pack-name">Pack Manga</div>
+                <div class="pack-rarity">1,1,1</div>
             </div>
 
             <div class="pack-card hidden" data-index="2">
                 <div class="pack-image">⭐</div>
                 <div class="pack-name">Pack Elite</div>
-                <div class="pack-rarity">Épique</div>
-            </div>
-
-            <div class="pack-card hidden" data-index="3">
-                <div class="pack-image">👑</div>
-                <div class="pack-name">Pack Royal</div>
-                <div class="pack-rarity">Légendaire</div>
-            </div>
-
-            <div class="pack-card hidden" data-index="4">
-                <div class="pack-image">🔥</div>
-                <div class="pack-name">Pack Mythique</div>
-                <div class="pack-rarity">Mythique</div>
+                <div class="pack-rarity">2,3,1</div>
             </div>
         </div>
 
-        <button class="open-pack-btn" onclick="openPack()">Ouvrir le Pack</button>
     </div>
 
     <!-- Bottom Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="#" class="nav-item">
+            <a href="accueil.html" class="nav-item active">
                 <div class="nav-icon">🏠</div>
                 <span>Accueil</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="inventaire.html" class="nav-item">
                 <div class="nav-icon">🎒</div>
                 <span>Inventaire</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="echange.html" class="nav-item">
                 <div class="nav-icon">🔄</div>
                 <span>Échanges</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="404.html" class="nav-item">
                 <div class="nav-icon">⚔️</div>
                 <span>Combats</span>
             </a>
-            <a href="#" class="nav-item">
+            <a href="Paramètres.html" class="nav-item">
                 <div class="nav-icon">⚙️</div>
                 <span>Paramètres</span>
             </a>
@@ -108,5 +101,5 @@
 
     <script src="js/extension1.js"></script>
 </body>
-</html>
 
+</html>
