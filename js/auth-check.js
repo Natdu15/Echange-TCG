@@ -1,4 +1,4 @@
-(function() {
+function() {
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     const currentUser = localStorage.getItem('currentUser');
     
