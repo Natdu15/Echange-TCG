@@ -112,7 +112,10 @@
      margin-bottom: 30px;
      box-shadow: 0 15px 40px rgba(122, 97, 241, 0.6);
  }
-
+.pack-logo img {
+    width: 180px;
+    height:auto;
+}
  .pack-title {
      font-size: 28px;
      font-weight: bold;
