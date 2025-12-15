@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TCG Arena - Choix Booster x10</title>
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/choix.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+            </svg>
+            TCG ARENA
+        </div>
+        <div class="user-profile">
+            <span>👤 Player123</span>
+        </div>
+    </header>
+
+    <div id="bubbles"></div>
+
+    <div class="main-content">
+        <div>
+            <h1 class="title">✨ Choisis ton Pack x10 ✨</h1>
+            <p class="subtitle">Sélectionne le pack que tu souhaites ouvrir 10 fois</p>
+        </div>
+
+        <div class="packs-container">
+            <div class="pack-choice" onclick="window.location.href='universite-multi.html'">
+                <div class="pack-icon">🎴</div>
+                <div class="pack-name">Pack UNIVERSITY</div>
+                <div class="pack-info">Cartes sur l'université</div>
+                <div class="pack-info">Rareté: 12★★★ 11★★ 17★</div>
+                <div class="pack-price">
+                    <span><img src="logo-monnaie.png"> 100 Gems</span>
+                </div>
+            </div>
+
+            <div class="pack-choice" onclick="window.location.href='manga-multi.html'">
+                <div class="pack-icon">💎</div>
+                <div class="pack-name">Pack MANGA</div>
+                <div class="pack-info">Cartes manga </div>
+                <div class="pack-info">Rareté: 1★★★ 2★★★ 3★★★</div>
+                <div class="pack-price">
+                    <span><img src="logo-monnaie.png"> 100 Gems</span>
+                </div>
+            </div>
+            <div class="pack-choice" onclick="window.location.href='multi-yume.html'">
+                <div class="pack-icon"><img src="logo-yume.png"></div>
+                <div class="pack-name">Pack YUME</div>
+                <div class="pack-info">Cartes Yumé exclusives</div>
+                <div class="pack-info">Rareté: 3★★★ 3★★ 3★</div>
+                <div class="pack-price">
+                    <span><img src="logo-monnaie.png"> 100 Gems</span>
+                </div>
+            </div>
+            <div class="pack-choice" onclick="window.location.href='multi-meme.html'">
+                <div class="pack-icon"><img src="logo-meme.png"></div>
+                <div class="pack-name">Pack REF</div>
+                <div class="pack-info">Cartes REF française</div>
+                <div class="pack-info">Rareté: 5★★★ 4★★ 4★</div>
+                <div class="pack-price">
+                    <span><img src="logo-monnaie.png"> 100 Gems</span>
+                </div>
+            </div>
+        </div>
+
+        <button class="back-btn" onclick="window.location.href='accueil.html'">
+            ← Retour à l'accueil
+        </button>
+    </div>
+    <footer>
+        <img src="footer.png" alt="Footer TCG Arena" class="footer-image">
+
+        <div class="footer-text-content">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <p>TCG Arena - Le jeu de cartes à collectionner ultime. Ouvre des boosters, collectionne des cartes
+                        rares et échange avec d'autres joueurs. </p>
+                    <div class="social-icons">
+                        <a href="https://discordapp.com/users/Nathan15000." title="Discord">DC</a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Liens rapides</h3>
+                    <ul>
+                        <li><a href="accueil.html">Accueil 🏠</a></li>
+                        <li><a href="inventaire.html">Inventaire 🎒</a></li>
+                        <li><a href="echange.html">Échanges🔄</a></li>
+                        <li><a href="liste.html">Liste des cartes 📝 </a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025/2026 TCG Arena. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/accueil.js"></script>
+</body>
+
+</html>
+<script>
+    // Création des bulles animées
+    const bubblesContainer = document.getElementById('bubbles');
+
+    function createBubble() {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        const size = Math.random() * 60 + 20;
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+        bubble.style.left = Math.random() * 100 + '%';
+        bubble.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        bubble.style.animationDelay = Math.random() * 5 + 's';
+        bubblesContainer.appendChild(bubble);
+
+        setTimeout(() => bubble.remove(), 20000);
+    }
+
+    for (let i = 0; i < 15; i++) {
+        setTimeout(createBubble, i * 1000);
+    }
+
+    setInterval(createBubble, 3000);
+</script>
+</body>
+
+</html>
