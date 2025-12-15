@@ -2,7 +2,7 @@ const currentUser = getCurrentUser();
 if (!currentUser) {
     window.location.href = 'index.html';
 }
-// État du jeu basé sur l'utilisateur connecté
+
 let gameState = {
     pseudo: currentUser.username,
     level: currentUser.level || 1,
