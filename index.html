@@ -1,36 +1,60 @@
-<script>
-  const API_URL = 'https://tcg-api-378m.onrender.com'; // ← TON API EST ICI
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="logo-tcg.png">
+  <title>Connexion Maximus TCG</title>
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+  <div class="background-jeux"></div>
+  <div class="container">
+    <h2>Connexion à Maximus TCG</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required>
+      <input type="password" id="password" placeholder="Mot de passe" required>
+      <button type="submit">Se connecter</button>
+    </form>
+    <p>Pas encore de compte ? <a href="inscription.html">Créer un compte</a></p>
+  </div>
 
-  document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+  <!-- SCRIPT DÉPLACÉ ICI EN BAS POUR QUE LE DOM SOIT PRÊT -->
+  <script>
+    const API_URL = 'https://tcg-api-378m.onrender.com'; // ton API
 
-    const email = document.getElementById('email').value.trim().toLowerCase();
-    const password = document.getElementById('password').value;
+    const form = document.getElementById('loginForm');
+    if (!form) {
+      console.error('Formulaire non trouvé – vérifie l’ID "loginForm"');
+    } else {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    if (!email || !password) {
-      alert('Tous les champs sont requis');
-      return;
-    }
+        const email = document.getElementById('email').value.trim().toLowerCase();
+        const password = document.getElementById('password').value;
 
-    try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, mot_de_passe: password })
+        try {
+          const response = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, mot_de_passe: password })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            localStorage.setItem('userId', data.userId);
+            localStorage.setItem('userEmail', email);
+            alert('Connexion réussie !');
+            window.location.href = 'accueil.html'; // ou jeu.html
+          } else {
+            alert(data.error || 'Mauvais email ou mot de passe');
+          }
+        } catch (err) {
+          alert('Erreur réseau – réessaie');
+        }
       });
-
-      const data = await response.json();
-
-      if (data.success) {
-        localStorage.setItem('userId', data.userId);
-        localStorage.setItem('userEmail', email);
-        alert('Connexion réussie ! Bienvenue dans Maximus TCG');
-        window.location.href = 'accueil.html'; // ← même page que après inscription
-      } else {
-        alert(data.error || 'Mauvais email ou mot de passe');
-      }
-    } catch (err) {
-      alert('Erreur réseau – réessaie dans quelques secondes');
     }
-  });
-</script>
+  </script>
+</body>
+</html>
