@@ -1,3 +1,4 @@
+        // Create animated bubbles
         function createBubbles() {
             const background = document.getElementById('background');
             const bubbleCount = 15;
@@ -21,6 +22,8 @@
         }
 
         createBubbles();
+
+        // Quest data structure
         const questsData = {
             daily: [
                 {
