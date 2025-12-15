@@ -1,10 +1,16 @@
 <script>
-  const API_URL = 'https://tcg-api.onrender.com';
+  // ←←← CHANGE CETTE LIGNE avec l’URL réelle de ton API quand elle sera déployée sur Render
+  const API_URL = 'https://tcg-api.onrender.com'; // Exemple – tu auras une URL comme https://tcg-api-xxxx.onrender.com
+
+  // Si l’API n’est pas encore déployée, cette ligne évite l’erreur
+  if (!API_URL || API_URL === 'https://tcg-api.onrender.com') {
+    alert('L’API backend n’est pas encore déployée. Contacte le développeur pour la mettre en ligne.');
+  }
 
   document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    const email = document.getElementById('email').value.trim();
+    const email = document.getElementById('email').value.trim().toLowerCase();
     const password = document.getElementById('password').value;
 
     if (!email || !password) {
@@ -19,17 +25,24 @@
         body: JSON.stringify({ email, mot_de_passe: password })
       });
 
+      if (!response.ok) {
+        const data = await response.json();
+        showError(data.error || 'Erreur de connexion');
+        return;
+      }
+
       const data = await response.json();
 
       if (data.success) {
         localStorage.setItem('userId', data.userId);
         localStorage.setItem('userEmail', email);
-        window.location.href = 'jeu.html'; // ou la page que tu veux après connexion
+        alert('Connexion réussie ! Bienvenue dans Maximus TCG');
+        window.location.href = 'accueil.html'; // ← change avec ta vraie page de jeu
       } else {
         showError(data.error || 'Mauvais email ou mot de passe');
       }
     } catch (err) {
-      showError('Impossible de contacter le serveur');
+      showError('Impossible de contacter le serveur. L’API n’est pas encore en ligne ou il y a un problème de connexion.');
     }
   });
 </script>
