@@ -1,0 +1,489 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.content {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-height: 100vh;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Animated Background Bubbles */
+#bubbles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.bubble {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.4;
+    animation: float 20s infinite ease-in-out;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    25% { transform: translateY(-100px) translateX(50px); }
+    50% { transform: translateY(-200px) translateX(-50px); }
+    75% { transform: translateY(-100px) translateX(100px); }
+}
+
+/* Header */
+.header {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    margin-bottom: 30px;
+    padding-top: 40px;
+}
+
+.header h1 {
+    color: white;
+    font-size: 3em;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    margin-bottom: 10px;
+}
+
+.header p {
+    color: #aaa;
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 15px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+/* Extension Selector */
+.extension-selector {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    margin: 0 auto 40px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.extension-btn {
+    padding: 15px 30px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    color: white;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.extension-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.extension-btn.active {
+    background: linear-gradient(135deg, #ff6b00, #ffd700);
+    border-color: #ffd700;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+/* Collection Container */
+.collection-container {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Rarity Section */
+.rarity-section {
+    margin-bottom: 60px;
+}
+
+.rarity-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.rarity-header h2 {
+    color: white;
+    font-size: 2em;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.rarity-count {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+}
+
+/* Cards Grid */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 30px;
+    padding: 20px;
+}
+
+/* Card Styles */
+.card-item {
+    position: relative;
+    aspect-ratio: 2/3;
+    border-radius: 15px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.card-item:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+}
+
+.card-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.logo {
+    width: 50px;
+}
+
+/* Common Cards */
+.card-item.common {
+    border: 3px solid #4169e1;
+    background: linear-gradient(135deg, #1e3a8a, #4169e1);
+    box-shadow: 0 10px 30px rgba(65, 105, 225, 0.5);
+}
+
+.card-item.common:hover {
+    box-shadow: 0 20px 40px rgba(65, 105, 225, 0.7);
+}
+
+/* Rare Cards */
+.card-item.rare {
+    border: 3px solid #ff1493;
+    background: linear-gradient(135deg, #c71585, #ff1493);
+    box-shadow: 0 10px 30px rgba(255, 20, 147, 0.5);
+}
+
+.card-item.rare:hover {
+    box-shadow: 0 20px 40px rgba(255, 20, 147, 0.7);
+}
+
+/* Legendary Cards */
+.card-item.legendary {
+    border: 3px solid #ffd700;
+    background: linear-gradient(135deg, #ff6b00, #ffd700);
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5);
+    animation: legendary-glow 2s ease-in-out infinite;
+}
+
+.card-item.legendary:hover {
+    box-shadow: 0 20px 40px rgba(255, 215, 0, 0.8);
+}
+
+@keyframes legendary-glow {
+    0%, 100% {
+        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.5),
+                    0 0 20px rgba(255, 215, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.8),
+                    0 0 40px rgba(255, 215, 0, 0.6);
+    }
+}
+
+/* Card Badge */
+.card-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+    text-transform: uppercase;
+    backdrop-filter: blur(10px);
+    z-index: 2;
+}
+
+.card-item.common .card-badge {
+    background: rgba(65, 105, 225, 0.9);
+    color: white;
+}
+
+.card-item.rare .card-badge {
+    background: rgba(255, 20, 147, 0.9);
+    color: white;
+}
+
+.card-item.legendary .card-badge {
+    background: rgba(255, 215, 0, 0.9);
+    color: #1a1a2e;
+    animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Card Name Overlay */
+.card-name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 15px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.1em;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card-item:hover .card-name {
+    opacity: 1;
+}
+
+/* Modal/Focus View - PLEIN ÉCRAN */
+.card-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+    padding: 0;
+    margin: 0;
+}
+
+.card-modal.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.modal-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 0 100px rgba(255, 215, 0, 0.5);
+    background: transparent;
+}
+
+.modal-card.common {
+    box-shadow: 0 0 100px rgba(65, 105, 225, 0.5);
+}
+
+.modal-card.rare {
+    box-shadow: 0 0 100px rgba(255, 20, 147, 0.5);
+}
+
+.modal-card.legendary {
+    box-shadow: 0 0 100px rgba(255, 215, 0, 0.8);
+    animation: modal-legendary-glow 2s ease-in-out infinite;
+}
+
+@keyframes modal-legendary-glow {
+    0%, 100% {
+        box-shadow: 0 0 80px rgba(255, 215, 0, 0.6);
+    }
+    50% {
+        box-shadow: 0 0 120px rgba(255, 215, 0, 1);
+    }
+}
+
+.modal-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background: transparent;
+}
+
+.modal-info {
+    display: none;
+}
+
+.modal-name {
+    display: none;
+}
+
+.modal-rarity {
+    display: none;
+}
+
+.modal-close {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 2001;
+}
+
+.modal-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2em;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+
+    .rarity-header h2 {
+        font-size: 1.5em;
+    }
+
+    .extension-btn {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+
+    .modal-close {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(26, 31, 46, 0.95);
+    padding: 1rem;
+    display: flex;
+    justify-content: space-around;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+.bottom-nav a {
+    text-decoration: none;
+    color: inherit;
+}
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 10px;
+    min-width: 70px;
+}
+
+.nav-item:hover {
+    background: rgba(94, 201, 232, 0.1);
+    transform: translateY(-2px);
+}
+
+.nav-item.active {
+    background: linear-gradient(135deg, #7a61f1 0%, #9b7ef5 100%);
+    color: white;
+}
+
+.nav-item span:first-child {
+    font-size: 1.5rem;
+}
+
+.nav-item span:last-child {
+    font-size: 0.85rem;
+}
