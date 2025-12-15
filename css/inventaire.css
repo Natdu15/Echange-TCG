@@ -1,320 +1,619 @@
-// Fonctions utilitaires pour la gestion utilisateur
-function getCurrentUser() {
-    try {
-        const userData = localStorage.getItem("current_user");
-        return userData ? JSON.parse(userData) : null;
-    } catch (err) {
-        console.error("Erreur récupération utilisateur:", err);
-        return null;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #000;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 80px;
+}
+
+/* Header */
+.header {
+    background: linear-gradient(to right, #1f2937, #000);
+    border-bottom: 2px solid #374151;
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    background: linear-gradient(to right, #22d3ee, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.header-stats {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.stat-selector {
+    background: #1f2937;
+    border: 2px solid #374151;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.stat-selector:hover {
+    border-color: #6366f1;
+}
+
+.stat-display {
+    background: linear-gradient(to right, #6366f1, #8b5cf6);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Filters */
+.filters-section {
+    background: #111827;
+    border-bottom: 2px solid #374151;
+    padding: 1rem;
+}
+
+.filters-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.filter-label {
+    font-size: 0.9rem;
+    color: #9ca3af;
+    font-weight: 600;
+}
+
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border: 2px solid #374151;
+    background: #1f2937;
+    color: white;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.85rem;
+}
+
+.filter-btn:hover {
+    border-color: #6366f1;
+}
+
+.filter-btn.active {
+    background: linear-gradient(to right, #6366f1, #8b5cf6);
+    border-color: #8b5cf6;
+}
+
+.search-bar {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+    position: relative;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.5rem 2.5rem 0.5rem 1rem;
+    background: #1f2937;
+    border: 2px solid #374151;
+    border-radius: 0.5rem;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.search-bar input:focus {
+    outline: none;
+    border-color: #6366f1;
+}
+
+.search-bar i {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.inventory-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.inventory-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(to right, #06b6d4, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.inventory-subtitle {
+    color: #9ca3af;
+    font-size: 1rem;
+}
+
+/* Cards Grid */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.card-wrapper {
+    position: relative;
+    aspect-ratio: 2/3;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.card-wrapper:hover {
+    transform: translateY(-10px);
+}
+
+.card {
+    width: 100%;
+    height: 100%;
+    border-radius: 0.75rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid;
+}
+
+/* Carte commune - Fond bleu */
+.card.common {
+    background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
+    border-color: #6ba3e8;
+    box-shadow: 0 8px 16px rgba(74, 144, 226, 0.3);
+}
+
+/* Carte rare - Fond rose */
+.card.rare {
+    background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+    border-color: #f06292;
+    box-shadow: 0 8px 16px rgba(233, 30, 99, 0.4);
+}
+
+/* Carte légendaire - Fond jaune avec effet scintillant */
+.card.legendary {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+    background-size: 200% 200%;
+    border-color: #ffe066;
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
+    animation: shimmer 2s infinite;
+}
+
+/* Animation scintillante pour les cartes légendaires */
+@keyframes shimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
     }
 }
 
-function initInventory() {
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-        console.error("Pas d'utilisateur connecté");
-        return [];
-    }
+.card.legendary::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.6) 50%,
+        transparent 70%
+    );
+    animation: shimmerMove 3s infinite;
+    pointer-events: none;
+}
 
-    try {
-        const inventoryData = localStorage.getItem(`inventory_${currentUser.id}`);
-        console.log("📦 Inventaire chargé:", inventoryData ? JSON.parse(inventoryData).length : 0, "cartes");
-        return inventoryData ? JSON.parse(inventoryData) : [];
-    } catch (err) {
-        console.log("Création d'un nouvel inventaire");
-        return [];
+@keyframes shimmerMove {
+    0% {
+        transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    }
+    100% {
+        transform: translateX(100%) translateY(100%) rotate(45deg);
     }
 }
 
-// Variables globales
-let inventory = [];
-let currentSort = 'date';
-let currentRarity = 'all';
-let searchQuery = '';
-let selectedCard = null;
-let currentUserId = null;
+.card-count {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-weight: bold;
+    font-size: 0.85rem;
+    z-index: 10;
+}
 
-// Éléments DOM
-const cardsGrid = document.getElementById('cardsGrid');
-const emptyState = document.getElementById('emptyState');
-const statSelector = document.getElementById('statSelector');
-const statValue = document.getElementById('statValue');
-const searchInput = document.getElementById('searchInput');
-const cardModal = document.getElementById('cardModal');
-const modalClose = document.getElementById('modalClose');
-const modalCard = document.getElementById('modalCard');
-const modalCardIcon = document.getElementById('modalCardIcon');
-const modalCardName = document.getElementById('modalCardName');
-const modalCardRarity = document.getElementById('modalCardRarity');
-const modalCardCount = document.getElementById('modalCardCount');
-const modalFavoriteBtn = document.getElementById('modalFavoriteBtn');
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    position: relative;
+    z-index: 1;
+}
 
-// Sauvegarder l'inventaire
-function saveInventory() {
-    if (!currentUserId) {
-        console.error("Pas d'ID utilisateur pour la sauvegarde");
-        return;
-    }
-    try {
-        localStorage.setItem(`inventory_${currentUserId}`, JSON.stringify(inventory));
-        console.log("✅ Inventaire sauvegardé:", inventory.length, "cartes");
-    } catch (err) {
-        console.error("❌ Erreur de sauvegarde:", err);
+.card-icon {
+    font-size: 3rem;
+    z-index: 1;
+}
+
+.card-name {
+    display: none;
+}
+
+.card-rarity {
+    display: none;
+}
+
+.favorite-btn {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    color: #9ca3af;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.favorite-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+}
+
+.favorite-btn.active {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.2);
+}
+
+/* Card Detail Modal */
+.card-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.card-modal.active {
+    display: flex;
+}
+
+.card-modal-content {
+    background: #1f2937;
+    border: 2px solid #374151;
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #ef4444;
+    border: none;
+    color: white;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.modal-close:hover {
+    background: #dc2626;
+    transform: rotate(90deg);
+}
+
+.modal-card {
+    width: 400px;
+    height: 560px;
+    margin: 0 auto 1.5rem;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.modal-card.common {
+    background: linear-gradient(135deg, #4a90e2 0%, #2c5aa0 100%);
+    box-shadow: 0 8px 16px rgba(74, 144, 226, 0.3);
+}
+
+.modal-card.rare {
+    background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+    box-shadow: 0 8px 16px rgba(233, 30, 99, 0.4);
+}
+
+.modal-card.legendary {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+    background-size: 200% 200%;
+    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
+    animation: shimmer 2s infinite;
+}
+
+.modal-card.legendary::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 30%,
+        rgba(255, 255, 255, 0.6) 50%,
+        transparent 70%
+    );
+    animation: shimmerMove 3s infinite;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.modal-card .card-icon {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.modal-card .card-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.modal-card .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.modal-info {
+    display: none;
+}
+
+.modal-card-name {
+    display: none;
+}
+
+.modal-card-rarity {
+    display: none;
+}
+
+.modal-card-count {
+    display: none;
+}
+
+.modal-favorite-btn {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 1rem;
+}
+
+.modal-favorite-btn.active {
+    background: linear-gradient(to right, #fbbf24, #f59e0b);
+    color: white;
+}
+
+.modal-favorite-btn:not(.active) {
+    background: #374151;
+    color: white;
+}
+
+.modal-favorite-btn:hover {
+    transform: scale(1.05);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-text {
+    font-size: 1.25rem;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+}
+
+.empty-subtext {
+    color: #6b7280;
+}
+
+/* Bottom Navigation */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #0f1419;
+    padding: 7px 0;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: #9ca3af;
+    font-size: 0.75rem;
+}
+
+.nav-item.active {
+    background-color: #7a61f1;
+    color: #fff;
+}
+
+.nav-item:hover:not(.active) {
+    background-color: #1e2936;
+    color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .cards-grid {
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 
-// Trier l'inventaire
-function sortInventory(inv, sortBy) {
-    const sorted = [...inv];
-    switch (sortBy) {
-        case 'date':
-            return sorted.sort((a, b) => b.date - a.date);
-        case 'rarity':
-            const rarityOrder = { legendary: 3, rare: 2, common: 1 };
-            return sorted.sort((a, b) => (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0));
-        case 'count':
-            return sorted.sort((a, b) => b.count - a.count);
-        default:
-            return sorted;
+@media (max-width: 768px) {
+    .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+    }
+
+    .logo {
+        font-size: 1.25rem;
+    }
+
+    .inventory-title {
+        font-size: 1.5rem;
+    }
+
+    .filters-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        flex-wrap: wrap;
+    }
+
+    .search-bar {
+        max-width: 100%;
+    }
+
+    .header-stats {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .stat-selector, .stat-display {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .modal-card {
+        width: 300px;
+        height: 420px;
     }
 }
 
-// Filtrer l'inventaire
-function filterInventory() {
-    let filtered = [...inventory];
+@media (max-width: 480px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
     
-    // Filtre par rareté
-    if (currentRarity !== 'all') {
-        const rarityMap = {
-            'legendary': 'legendary',
-            'commun': 'common',
-            'rare': 'rare',
-            'favoris': 'favoris' // Filtre spécial pour les favoris
-        };
-        const targetRarity = rarityMap[currentRarity] || currentRarity;
-        
-        if (targetRarity === 'favoris') {
-            filtered = filtered.filter(card => card.favorite === true);
-        } else {
-            filtered = filtered.filter(card => card.rarity === targetRarity);
-        }
-    }
-    
-    // Filtre par recherche
-    if (searchQuery) {
-        filtered = filtered.filter(card =>
-            card.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }
-    
-    return sortInventory(filtered, currentSort);
-}
-
-// Calculer les statistiques
-function calculateStats(statType) {
-    switch (statType) {
-        case 'total':
-            return inventory.reduce((sum, card) => sum + card.count, 0);
-        case 'unique':
-            return inventory.length;
-        case 'common':
-            return inventory.filter(c => c.rarity === 'common').reduce((s, c) => s + c.count, 0);
-        case 'rare':
-            return inventory.filter(c => c.rarity === 'rare').reduce((s, c) => s + c.count, 0);
-        case 'legendary':
-            return inventory.filter(c => c.rarity === 'legendary').reduce((s, c) => s + c.count, 0);
-        default:
-            return 0;
+    .modal-card {
+        width: 250px;
+        height: 350px;
     }
 }
-
-// Afficher les cartes
-function renderCards() {
-    const filtered = filterInventory();
-    cardsGrid.innerHTML = '';
-
-    console.log("🎴 Affichage de", filtered.length, "cartes");
-
-    if (filtered.length === 0) {
-        emptyState.style.display = 'block';
-        cardsGrid.style.display = 'none';
-        return;
-    }
-
-    emptyState.style.display = 'none';
-    cardsGrid.style.display = 'grid';
-
-    const rarityNames = {
-        common: 'Commun',
-        rare: 'Rare',
-        legendary: 'Légendaire'
-    };
-
-    filtered.forEach(card => {
-        const cardWrapper = document.createElement('div');
-        cardWrapper.className = 'card-wrapper';
-
-        cardWrapper.innerHTML = `
-            <div class="card ${card.rarity}">
-                <button class="favorite-btn ${card.favorite ? 'active' : ''}" data-id="${card.id}">
-                    <i class="fas fa-star"></i>
-                </button>
-                <div class="card-count">x${card.count}</div>
-                ${card.image ? `<img src="${card.image}" alt="${card.name}" class="card-image">` : '<div class="card-icon">🃏</div>'}
-                <div class="card-name">${card.name}</div>
-                <div class="card-rarity">${rarityNames[card.rarity] || card.rarity}</div>
-            </div>
-        `;
-
-        cardWrapper.addEventListener('click', (e) => {
-            if (!e.target.closest('.favorite-btn')) {
-                openCardModal(card);
-            }
-        });
-
-        const favoriteBtn = cardWrapper.querySelector('.favorite-btn');
-        favoriteBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleFavorite(card.id);
-        });
-
-        cardsGrid.appendChild(cardWrapper);
-    });
-
-    updateStats();
-}
-
-// Mettre à jour les statistiques
-function updateStats() {
-    const stat = calculateStats(statSelector.value);
-    statValue.textContent = stat;
-}
-
-// Basculer favori
-function toggleFavorite(cardId) {
-    const card = inventory.find(c => c.id === cardId);
-    if (card) {
-        card.favorite = !card.favorite;
-        saveInventory();
-        renderCards();
-    }
-}
-
-// Ouvrir la modal de carte
-function openCardModal(card) {
-    selectedCard = card;
-
-    const rarityNames = {
-        common: 'Commun',
-        rare: 'Rare',
-        legendary: 'Légendaire'
-    };
-
-    modalCard.className = `modal-card card ${card.rarity}`;
-    
-    // Afficher l'image si disponible
-    if (card.image) {
-        modalCardIcon.innerHTML = `<img src="${card.image}" alt="${card.name}" class="card-image">`;
-    } else {
-        modalCardIcon.textContent = '🃏';
-    }
-    
-    modalCardName.textContent = card.name;
-    modalCardRarity.textContent = rarityNames[card.rarity] || card.rarity;
-    modalCardCount.textContent = `Possédé: x${card.count}`;
-
-    if (card.favorite) {
-        modalFavoriteBtn.classList.add('active');
-        modalFavoriteBtn.innerHTML = '<i class="fas fa-star"></i> Retirer des favoris';
-    } else {
-        modalFavoriteBtn.classList.remove('active');
-        modalFavoriteBtn.innerHTML = '<i class="fas fa-star"></i> Ajouter aux favoris';
-    }
-
-    cardModal.classList.add('active');
-}
-
-// Event listeners pour la modal
-if (modalClose) {
-    modalClose.addEventListener('click', () => {
-        cardModal.classList.remove('active');
-    });
-}
-
-if (cardModal) {
-    cardModal.addEventListener('click', (e) => {
-        if (e.target === cardModal) {
-            cardModal.classList.remove('active');
-        }
-    });
-}
-
-if (modalFavoriteBtn) {
-    modalFavoriteBtn.addEventListener('click', () => {
-        if (selectedCard) {
-            toggleFavorite(selectedCard.id);
-            openCardModal(selectedCard);
-        }
-    });
-}
-
-// Event listener pour le sélecteur de stats
-if (statSelector) {
-    statSelector.addEventListener('change', updateStats);
-}
-
-// Event listeners pour les boutons de tri
-document.querySelectorAll('[data-sort]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-sort]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentSort = btn.dataset.sort;
-        renderCards();
-    });
-});
-
-// Event listeners pour les boutons de rareté
-document.querySelectorAll('[data-rarity]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-rarity]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentRarity = btn.dataset.rarity;
-        renderCards();
-    });
-});
-
-// Event listener pour la recherche
-if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-        searchQuery = e.target.value;
-        renderCards();
-    });
-}
-
-// Fonction d'initialisation
-function initialize() {
-    console.log("🚀 Initialisation de l'inventaire...");
-    
-    const currentUser = getCurrentUser();
-    if (!currentUser) {
-        console.error("❌ Pas d'utilisateur connecté");
-        // Créer un utilisateur par défaut pour les tests
-        const defaultUser = { id: 'default_user', name: 'Joueur' };
-        localStorage.setItem('current_user', JSON.stringify(defaultUser));
-        currentUserId = defaultUser.id;
-    } else {
-        console.log("👤 Utilisateur:", currentUser);
-        currentUserId = currentUser.id;
-    }
-    
-    inventory = initInventory();
-    
-    console.log("📦 Inventaire chargé:", inventory);
-    renderCards();
-}
-
-// Démarrer l'application
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("📄 DOM chargé, démarrage...");
-    initialize();
-});
