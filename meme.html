@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pack Standard - TCG</title>
+    <link rel="icon" type="logo-tcg.png" href="logo-tcg.png">
+    <link rel="stylesheet" href="css/universite.css">
+
+</head>
+
+<body>
+    <!-- Animated Background Bubbles -->
+    <div id="bubbles"></div>
+
+    <!-- Back Button -->
+    <div class="back-button" onclick="goBack()">←</div>
+
+    <!-- Info Display -->
+    <div class="info-display">
+        <h3>Pack YUME</h3>
+        <p>3 cartes par pack</p>
+        <p>Cliquez pour ouvrir</p>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container" id="mainContainer">
+        <div class="booster-pack" id="mainBooster" onclick="selectBooster()">
+            <div class="pack-front">
+                <div class="pack-logo"><img src="logo-meme.png"></div>
+                <div class="pack-title">Pack MEME</div>
+                <div class="pack-subtitle">Série feançaise</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Opening Container -->
+    <div class="opening-container" id="openingContainer">
+        <div class="opening-instruction" id="instruction">Glissez vers la droite pour ouvrir →</div>
+
+        <div class="opening-pack" id="openingPack">
+            <div class="pack-wrapper" id="packWrapper">
+                <div class="booster-pack">
+                    <div class="pack-front">
+                        <div class="pack-logo"><img src="logo-meme.png"></div>
+                        <div class="pack-title">Pack MEME</div>
+                        <div class="pack-subtitle">Série française</div>
+                    </div>
+                </div>
+            </div>
+            <div class="pack-tear-progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+
+        <!-- Cards Display -->
+        <div class="cards-container" id="cardsContainer">
+            <!-- Cards will appear here -->
+        </div>
+    </div>
+
+    <!-- Finish Button -->
+    <button class="finish-button" id="finishButton" onclick="finishOpening()">→</button>
+
+    <script src="js/meme.js"></script>
+</body>
+
+</html>
