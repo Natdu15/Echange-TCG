@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="logo-tcg.png" href="logo-tcg.png">
+    <title>Mes Amis - TCG</title>
+    <link rel="stylesheet" href="css/amis.css">
+    <link rel="stylesheet" href="css/footer.css">
+</head>
+
+<body>
+    <div class="main-content">
+        <div class="header">
+            <button class="btn-back" onclick="window.location.href='echange.html'">← Retour</button>
+            <h1>👥 Mes Amis</h1>
+        </div>
+
+        <div class="add-friend-section">
+            <h2>➕ Ajouter un ami</h2>
+            <div class="add-friend-form">
+                <input type="text" id="friendUsername" placeholder="Entrez le pseudo de votre ami..." maxlength="20">
+                <button class="btn-add" onclick="addFriend()">Ajouter</button>
+            </div>
+            <p class="info-text">💡 Demandez le pseudo de votre ami pour l'ajouter</p>
+        </div>
+
+        <div class="friends-list-section">
+            <h2>📋 Liste d'amis (<span id="friendCount">0</span>)</h2>
+            <div id="friendsList" class="friends-list">
+                <!-- Les amis seront affichés ici -->
+            </div>
+        </div>
+    </div>
+
+      <footer>
+        <img src="footer.png" alt="Footer TCG Arena" class="footer-image">
+
+        <div class="footer-text-content">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <p>TCG Arena - Le jeu de cartes à collectionner ultime. Ouvre des boosters, collectionne des cartes
+                        rares et échange avec d'autres joueurs.</p>
+                    <div class="social-icons">
+                        <a href="https://discordapp.com/users/Nathan15000." title="Discord">DC</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025/2026 TCG Arena. Tous droits réservés.</p>
+            </div>
+        </div>
+   </footer>
+
+    <nav class="bottom-nav">
+        <a class="nav-item" href="accueil.html">
+            <span style="font-size: 1.5rem;">🏠</span>
+            <span>Accueil</span>
+        </a>
+
+        <a class="nav-item" href="inventaire.html">
+            <span style="font-size: 1.5rem;">🎒</span>
+            <span>Inventaire</span>
+        </a>
+
+        <a class="nav-item active" href="echange.html">
+            <span style="font-size: 1.5rem;">🔄</span>
+            <span>Échanges</span>
+        </a>
+
+        <a class="nav-item" href="404.html">
+            <span style="font-size: 1.5rem;">⚔️</span>
+            <span>Combats</span>
+        </a>
+
+        <a class="nav-item" href="Paramètres.html">
+            <span style="font-size: 1.5rem;">⚙️</span>
+            <span>Paramètres</span>
+        </a>
+    </nav>
+
+    <script src="js/amis.js"></script>
+</body>
+
+</html>
