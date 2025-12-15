@@ -1,4 +1,3 @@
-// Card databases
 const cardDatabases = {
     university: [
            // Common cards (60% chance)
