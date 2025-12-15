@@ -1,55 +1,35 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="image/png" href="logo-tcg.png">
-  <title>Connexion Maximus TCG</title>
-  <link rel="stylesheet" href="css/index.css">
-</head>
-<body>
-  <div class="background-jeux"></div>
-  <div class="container">
-    <h2>Connexion à Maximus TCG</h2>
-    <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required>
-      <input type="password" id="password" placeholder="Mot de passe" required>
-      <button type="submit">Se connecter</button>
-    </form>
-    <p>Pas encore de compte ? <a href="inscription.html">Créer un compte</a></p>
-  </div>
+<script>
+  const API_URL = 'https://tcg-api.onrender.com';
 
-  <script>
-    // ←←← CHANGE CETTE LIGNE avec l’URL de ton API quand elle sera déployée
-    const API_URL = 'https://tcg-api.onrender.com'; // même URL que dans inscription.html
+  document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
 
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
 
-      const email = document.getElementById('email').value.trim().toLowerCase();
-      const password = document.getElementById('password').value;
+    if (!email || !password) {
+      showError('Tous les champs sont requis');
+      return;
+    }
 
-      try {
-        const response = await fetch(`${API_URL}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, mot_de_passe: password })
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (data.success) {
-          localStorage.setItem('userId', data.userId);
-          localStorage.setItem('userEmail', email);
-          localStorage.setItem('username', data.username || email);
-          window.location.href = 'jeu.html'; // page après connexion
-        } else {
-          alert(data.error || 'Email ou mot de passe incorrect');
-        }
-      } catch (err) {
-        alert('Impossible de contacter le serveur. Vérifie l’URL de l’API.');
+      if (data.success) {
+        localStorage.setItem('userId', data.userId);
+        localStorage.setItem('userEmail', email);
+        window.location.href = 'jeu.html'; // ou la page que tu veux après connexion
+      } else {
+        showError(data.error || 'Mauvais email ou mot de passe');
       }
-    });
-  </script>
-</body>
-</html>
+    } catch (err) {
+      showError('Impossible de contacter le serveur');
+    }
+  });
+</script>
