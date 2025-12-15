@@ -1,4 +1,3 @@
-// Card database with images and rarities
         const cardDatabase = [
             // Common cards (60% chance)
             { id: 1, name: "Dragon Bleu", rarity: "common", image: "cartes-pokémon/anime/ace.png" },
