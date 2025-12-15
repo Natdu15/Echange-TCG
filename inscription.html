@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8"> 
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="logo-tcg.png" href="logo-tcg.png">
+  <link rel="icon" type="image/png" href="logo-tcg.png">
   <title>Inscription Maximus TCG</title>
   <link rel="stylesheet" href="css/index.css">
 </head>
@@ -21,31 +21,44 @@
     <p>Déjà un compte ? <a href="index.html">Se connecter</a></p>
   </div>
 
-  <script src="js/inscription.js"></script>
-<script>
-const API_URL = 'https://tcg-api-xxxx.koyeb.app';
+  <script>
+    // ←←← CHANGE CETTE LIGNE avec l’URL de ton API quand elle sera déployée
+    const API_URL = 'https://tcg-api.onrender.com'; // ou .koyeb.app si tu restes sur Koyeb
 
-document.getElementById('registerForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  const username = document.getElementById('username').value.trim();
-  const email = document.getElementById('email').value.trim().toLowerCase();
-  const password = document.getElementById('password').value;
-  const confirm = document.getElementById('confirmPassword').value;
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-  if (password !== confirm) return alert('Mots de passe différents');
-  if (password.length < 6) return alert('Mot de passe trop court');
+      const username = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirmPassword').value;
 
-  const res = await fetch(`${API_URL}/auth/register`, {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({username, email, password})
-  });
-  const data = await res.json();
-  if (data.success) {
-    alert('Compte créé !');
-    localStorage.setItem('userId', data.userId);
-    localStorage.setItem('username', username);
-    window.location.href = 'jeu.html';
-  } else alert(data.error);
-});
-</script>
-</body></html>
+      if (!username) return alert('Le pseudo est obligatoire');
+      if (password !== confirm) return alert('Les mots de passe ne correspondent pas');
+      if (password.length < 6) return alert('Le mot de passe doit avoir au moins 6 caractères');
+
+      try {
+        const response = await fetch(`${API_URL}/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          alert('Compte créé avec succès ! Tu peux te connecter.');
+          localStorage.setItem('userId', data.userId);
+          localStorage.setItem('username', username);
+          localStorage.setItem('userEmail', email);
+          window.location.href = 'jeu.html'; // ou accueil.html, la page après connexion
+        } else {
+          alert(data.error || 'Erreur lors de l’inscription');
+        }
+      } catch (err) {
+        alert('Impossible de contacter le serveur. Vérifie l’URL de l’API.');
+      }
+    });
+  </script>
+</body>
+</html>
