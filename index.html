@@ -19,19 +19,28 @@
     <p>Pas encore de compte ? <a href="inscription.html">Créer un compte</a></p>
   </div>
 
-  <!-- SCRIPT DÉPLACÉ ICI EN BAS POUR QUE LE DOM SOIT PRÊT -->
+  <!-- Script en bas du body pour éviter l'erreur null -->
   <script>
-    const API_URL = 'https://tcg-api-378m.onrender.com'; // ton API
+    const API_URL = 'https://tcg-api-378m.onrender.com'; // ← TON API EST ICI, C'EST BON !
 
-    const form = document.getElementById('loginForm');
-    if (!form) {
-      console.error('Formulaire non trouvé – vérifie l’ID "loginForm"');
-    } else {
+    // Attendre que le DOM soit chargé
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('loginForm');
+      if (!form) {
+        console.error('Formulaire login non trouvé');
+        return;
+      }
+
       form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const email = document.getElementById('email').value.trim().toLowerCase();
         const password = document.getElementById('password').value;
+
+        if (!email || !password) {
+          alert('Tous les champs sont requis');
+          return;
+        }
 
         try {
           const response = await fetch(`${API_URL}/auth/login`, {
@@ -45,16 +54,16 @@
           if (data.success) {
             localStorage.setItem('userId', data.userId);
             localStorage.setItem('userEmail', email);
-            alert('Connexion réussie !');
-            window.location.href = 'accueil.html'; // ou jeu.html
+            alert('Connexion réussie ! Bienvenue dans Maximus TCG');
+            window.location.href = 'accueil.html'; // ← ta page d'accueil
           } else {
             alert(data.error || 'Mauvais email ou mot de passe');
           }
         } catch (err) {
-          alert('Erreur réseau – réessaie');
+          alert('Erreur réseau – réessaie dans quelques secondes');
         }
       });
-    }
+    });
   </script>
 </body>
 </html>
