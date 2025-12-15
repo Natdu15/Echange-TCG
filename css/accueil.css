@@ -21,8 +21,8 @@ body::before {
     width: 100%;
     height: 100%;
     background: radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(72, 149, 239, 0.2) 0%, transparent 50%);
+        radial-gradient(circle at 80% 80%, rgba(138, 43, 226, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(72, 149, 239, 0.2) 0%, transparent 50%);
     pointer-events: none;
     z-index: 0;
 }
@@ -42,6 +42,7 @@ header {
 img {
     max-width: 80px;
 }
+
 .logo {
     display: flex;
     align-items: center;
@@ -161,6 +162,7 @@ img {
     box-shadow: 0 8px 25px rgba(122, 97, 241, 0.3);
     transition: all 0.3s ease;
 }
+
 .pack-image img {
     width: 200px;
 }
@@ -230,10 +232,17 @@ img {
     color: white;
     box-shadow: 0 8px 25px rgba(243, 156, 18, 0.4);
 }
+
 .btn-gems img {
     height: 30px;
     width: auto;
 }
+
+.btn-gems a {
+    text-decoration: none;
+    color: white;
+}
+
 .btn-gems:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 35px rgba(243, 156, 18, 0.6);
@@ -357,9 +366,12 @@ img {
 }
 
 @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translate(-50%, -50%) translateY(0);
     }
+
     50% {
         transform: translate(-50%, -50%) translateY(-15px);
     }
@@ -446,12 +458,15 @@ img {
         transform: translateX(0) rotate(0deg);
         opacity: 0;
     }
+
     10% {
         opacity: 0.6;
     }
+
     90% {
         opacity: 0.6;
     }
+
     100% {
         bottom: 110%;
         transform: translateX(100px) rotate(360deg);
@@ -543,18 +558,18 @@ img {
     }
 }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0a0a;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding-bottom: 0;
-        }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #0a0a0a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 0;
+}
