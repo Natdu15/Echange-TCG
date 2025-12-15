@@ -22,7 +22,7 @@
 
         createBubbles();
 
-        // Carousel functionality
+
         let currentIndex = 0;
         const packs = document.querySelectorAll('.pack-card');
         const totalPacks = packs.length;
