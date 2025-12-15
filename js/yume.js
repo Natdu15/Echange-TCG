@@ -1,3 +1,4 @@
+// Card database with images and rarities
 const cardDatabase = [
 
     { id: 1, name: "", rarity: "common", image: "cartes-pokémon/yume/.png" },
