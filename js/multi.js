@@ -1,4 +1,3 @@
-// Card database with images and rarities
 const cardDatabase = [
         // Common cards (60% chance)
     { id: 1, name: "Gourroux du Bios", rarity: "common", image: "cartes-pokémon/bios.png" },
