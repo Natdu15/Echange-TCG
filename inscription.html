@@ -22,41 +22,46 @@
   </div>
 
   <script>
-    const API_URL = 'https://tcg-api-378m.onrender.com'; // ← TON API EST DÉPLOYÉE ICI
+    const API_URL = 'https://tcg-api-378m.onrender.com'; // ← TON API EST ICI
 
-    document.getElementById('registerForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('registerForm');
+      if (!form) return;
 
-      const pseudo = document.getElementById('username').value.trim();
-      const email = document.getElementById('email').value.trim().toLowerCase();
-      const password = document.getElementById('password').value;
-      const confirm = document.getElementById('confirmPassword').value;
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      if (pseudo.length < 3) return alert('Le pseudo doit avoir au moins 3 caractères');
-      if (password !== confirm) return alert('Les mots de passe ne correspondent pas');
-      if (password.length < 6) return alert('Le mot de passe doit avoir au moins 6 caractères');
+        const pseudo = document.getElementById('username').value.trim();
+        const email = document.getElementById('email').value.trim().toLowerCase();
+        const password = document.getElementById('password').value;
+        const confirm = document.getElementById('confirmPassword').value;
 
-      try {
-        const response = await fetch(`${API_URL}/auth/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pseudo, email, mot_de_passe: password })
-        });
+        if (pseudo.length < 3) return alert('Pseudo trop court (min 3 caractères)');
+        if (password !== confirm) return alert('Les mots de passe ne correspondent pas');
+        if (password.length < 6) return alert('Mot de passe trop court (min 6 caractères)');
 
-        const data = await response.json();
+        try {
+          const response = await fetch(`${API_URL}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pseudo, email, mot_de_passe: password })
+          });
 
-        if (data.success) {
-          alert('Compte créé avec succès ! Tu peux maintenant te connecter.');
-          localStorage.setItem('userId', data.userId);
-          localStorage.setItem('pseudo', pseudo);
-          localStorage.setItem('userEmail', email);
-          window.location.href = 'accueil.html'; // ← change si ta page de jeu s'appelle autrement
-        } else {
-          alert(data.error || 'Erreur lors de l’inscription');
+          const data = await response.json();
+
+          if (data.success) {
+            alert('Compte créé avec succès !');
+            localStorage.setItem('userId', data.userId);
+            localStorage.setItem('pseudo', pseudo);
+            localStorage.setItem('userEmail', email);
+            window.location.href = 'accueil.html'; // ← ta page d'accueil
+          } else {
+            alert(data.error || 'Erreur lors de l’inscription');
+          }
+        } catch (err) {
+          alert('Erreur réseau – réessaie');
         }
-      } catch (err) {
-        alert('Erreur réseau – réessaie dans quelques secondes');
-      }
+      });
     });
   </script>
 </body>
