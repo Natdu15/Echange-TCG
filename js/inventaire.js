@@ -1,4 +1,4 @@
-// Fonctions utilitaires pour la gestion utilisateur
+
 function getCurrentUser() {
     try {
         const userData = localStorage.getItem("current_user");
