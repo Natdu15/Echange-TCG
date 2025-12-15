@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TCG Arena - Ouvre tes Boosters</title>
     <link rel="stylesheet" href="css/accueil.css">
+    <link rel="stylesheet" href="css/footer.css">
 </head>
 
 <body>
@@ -21,7 +22,7 @@
             <span>Niv. 1</span>
         </div>
     </header>
-    <div id="bubbles"></div>
+
     <div class="main-content">
         <h1 class="title">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
@@ -35,41 +36,53 @@
             <div class="stat-badge">
                 🎁 2/2 Gratuits par jour !
             </div>
-            <div class="stat-badge timer-badge">
+            <div class="stat-badge">
                 ⏱️ 12h 00m 00s
             </div>
         </div>
 
-        <div class="pack-card" data-index="0" onclick="window.location.href='universite.html'">
+        <div class="pack-card">
             <div class="pack-image">🎴</div>
             <div class="pack-name">Pack UNIVERSITY</div>
             <div class="pack-rarity">3,2,1</div>
         </div>
 
-
-        <div class="pack-card right" data-index="1" onclick="window.location.href='manga.html'">
+        <div class="pack-card">
             <div class="pack-image">💎</div>
             <div class="pack-name">Pack Manga</div>
             <div class="pack-rarity">1,1,1</div>
         </div>
 
-        <div class="pack-card hidden" data-index="2">
-            <div class="pack-image">⭐</div>
-            <div class="pack-name">Pack Elite</div>
-            <div class="pack-rarity">2,3,1</div>
-        </div>
-
         <div class="action-buttons">
             <button class="btn btn-free">
-                <a href="extension1.html">🎁 Ouvrir (Gratuit)</a>
+                <a href="#">Cliquer sur les booster pour les ouvrir !</a>
             </button>
-            <button class="btn btn-gems" onclick="window.location.href='universite-multi.html'">
-                <img src="logo-monnaie.png">x10 (100 Gems)
+            <button class="btn btn-gems">
+                <img src="logo-monnaie.png"> x10 (100 Gems)
             </button>
         </div>
     </div>
 
-    <div class="trophy-btn">🏆</div>
+    <footer>
+        <img src="footer.png" alt="Footer TCG Arena" class="footer-image">
+
+        <div class="footer-text-content">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <p>TCG Arena - Le jeu de cartes à collectionner ultime. Ouvre des boosters, collectionne des cartes
+                        rares et échange avec d'autres joueurs.</p>
+                    <div class="social-icons">
+                        <a href="https://discordapp.com/users/Nathan15000." title="Discord">DC</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025/2026 TCG Arena. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
 
     <nav class="bottom-nav">
         <a class="nav-item active" href="accueil.html">
@@ -97,7 +110,6 @@
             <span>Paramètres</span>
         </a>
     </nav>
-    <script src="js/accueil.js"></script>
 </body>
 
 </html>
