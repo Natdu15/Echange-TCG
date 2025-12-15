@@ -22,18 +22,17 @@
   </div>
 
   <script>
-    // ←←← CHANGE CETTE LIGNE avec l’URL de ton API quand elle sera déployée
-    const API_URL = 'https://tcg-api.onrender.com'; // ou .koyeb.app si tu restes sur Koyeb
+    const API_URL = 'https://tcg-api-378m.onrender.com'; // ← TON API EST DÉPLOYÉE ICI
 
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
-      const username = document.getElementById('username').value.trim();
+      const pseudo = document.getElementById('username').value.trim();
       const email = document.getElementById('email').value.trim().toLowerCase();
       const password = document.getElementById('password').value;
       const confirm = document.getElementById('confirmPassword').value;
 
-      if (!username) return alert('Le pseudo est obligatoire');
+      if (pseudo.length < 3) return alert('Le pseudo doit avoir au moins 3 caractères');
       if (password !== confirm) return alert('Les mots de passe ne correspondent pas');
       if (password.length < 6) return alert('Le mot de passe doit avoir au moins 6 caractères');
 
@@ -41,22 +40,22 @@
         const response = await fetch(`${API_URL}/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, email, password })
+          body: JSON.stringify({ pseudo, email, mot_de_passe: password })
         });
 
         const data = await response.json();
 
         if (data.success) {
-          alert('Compte créé avec succès ! Tu peux te connecter.');
+          alert('Compte créé avec succès ! Tu peux maintenant te connecter.');
           localStorage.setItem('userId', data.userId);
-          localStorage.setItem('username', username);
+          localStorage.setItem('pseudo', pseudo);
           localStorage.setItem('userEmail', email);
-          window.location.href = 'jeu.html'; // ou accueil.html, la page après connexion
+          window.location.href = 'accueil.html'; // ← change si ta page de jeu s'appelle autrement
         } else {
           alert(data.error || 'Erreur lors de l’inscription');
         }
       } catch (err) {
-        alert('Impossible de contacter le serveur. Vérifie l’URL de l’API.');
+        alert('Erreur réseau – réessaie dans quelques secondes');
       }
     });
   </script>
