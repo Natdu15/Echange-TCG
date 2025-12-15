@@ -1,4 +1,3 @@
-// Vérification utilisateur connecté
 const currentUser = getCurrentUser();
 if (!currentUser) {
     window.location.href = 'index.html';
