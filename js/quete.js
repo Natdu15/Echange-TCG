@@ -1,4 +1,3 @@
-        // Create animated bubbles
         function createBubbles() {
             const background = document.getElementById('background');
             const bubbleCount = 15;
