@@ -11,7 +11,6 @@ body {
   overflow: hidden;
   position: relative;
 }
-
 h1 {
   font-size: 8rem;
   background: linear-gradient(135deg, #667eea, #764ba2);
@@ -21,14 +20,12 @@ h1 {
   position: relative;
   z-index: 1;
 }
-
 p {
   font-size: 1.5rem;
   margin-top: 1rem;
   position: relative;
   z-index: 1;
 }
-
 a {
   margin-top: 2rem;
   text-decoration: none;
@@ -41,13 +38,11 @@ a {
   position: relative;
   z-index: 2;
 }
-
 a:hover {
   background: linear-gradient(135deg, #667eea, #764ba2);
   transform: scale(1.1);
   box-shadow: 0 0 20px #764ba2;
 }
-
 .particles {
   position: absolute;
   top: 0;
@@ -57,14 +52,12 @@ a:hover {
   pointer-events: none;
   z-index: 0;
 }
-
 .particle {
   position: absolute;
   border-radius: 50%;
   background: rgba(118, 75, 162, 0.5);
   animation: float linear infinite;
 }
-
 @keyframes glitch {
   0% { text-shadow: 2px 2px #764ba2, -2px -2px #667eea; }
   25% { text-shadow: -2px 2px #764ba2, 2px -2px #667eea; }
@@ -72,7 +65,6 @@ a:hover {
   75% { text-shadow: -1px -1px #764ba2, 1px 1px #667eea; }
   100% { text-shadow: 2px 2px #764ba2, -2px -2px #667eea; }
 }
-
 @keyframes float {
   0% { transform: translateY(0); opacity: 1; }
   100% { transform: translateY(-110vh); opacity: 0; }
