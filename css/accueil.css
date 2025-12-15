@@ -40,7 +40,7 @@ header {
 }
 
 img {
-    max-width: 30px;
+    max-width: 80px;
 }
 .logo {
     display: flex;
@@ -161,6 +161,9 @@ img {
     box-shadow: 0 8px 25px rgba(122, 97, 241, 0.3);
     transition: all 0.3s ease;
 }
+.pack-image img {
+    width: 200px;
+}
 
 .pack-card:hover .pack-image {
     transform: scale(1.05);
@@ -227,7 +230,10 @@ img {
     color: white;
     box-shadow: 0 8px 25px rgba(243, 156, 18, 0.4);
 }
-
+.btn-gems img {
+    height: 30px;
+    width: auto;
+}
 .btn-gems:hover {
     transform: translateY(-3px);
     box-shadow: 0 12px 35px rgba(243, 156, 18, 0.6);
@@ -536,3 +542,19 @@ img {
         font-size: 0.75rem;
     }
 }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0a0a;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding-bottom: 0;
+        }
