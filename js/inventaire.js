@@ -1,35 +1,40 @@
-async function loadUser() {
-    const userId = localStorage.getItem("user_id");
-    const status = document.getElementById("status");
+// Fonctions utilitaires pour la gestion utilisateur
+function getCurrentUser() {
+    try {
+        const userData = localStorage.getItem("current_user");
+        return userData ? JSON.parse(userData) : null;
+    } catch (err) {
+        console.error("Erreur récupération utilisateur:", err);
+        return null;
+    }
+}
 
-    if (!userId) {
-        status.textContent = "Pas connecté";
-        return;
+function initInventory() {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        console.error("Pas d'utilisateur connecté");
+        return [];
     }
 
     try {
-        const response = await fetch(`https://TON-BACKEND.onrender.com/user/${userId}`);
-        const data = await response.json();
-        document.getElementById("userEmail").textContent = data.email;
+        const inventoryData = localStorage.getItem(`inventory_${currentUser.id}`);
+        console.log("📦 Inventaire chargé:", inventoryData ? JSON.parse(inventoryData).length : 0, "cartes");
+        return inventoryData ? JSON.parse(inventoryData) : [];
     } catch (err) {
-        status.textContent = "Erreur : " + err.message;
+        console.log("Création d'un nouvel inventaire");
+        return [];
     }
 }
 
-loadUser();
-
-const currentUser = getCurrentUser();
-if (!currentUser) {
-    window.location.href = 'index.html';
-}
-
-let inventory = currentUser.cards || [];
-
+// Variables globales
+let inventory = [];
 let currentSort = 'date';
 let currentRarity = 'all';
 let searchQuery = '';
 let selectedCard = null;
+let currentUserId = null;
 
+// Éléments DOM
 const cardsGrid = document.getElementById('cardsGrid');
 const emptyState = document.getElementById('emptyState');
 const statSelector = document.getElementById('statSelector');
@@ -44,19 +49,29 @@ const modalCardRarity = document.getElementById('modalCardRarity');
 const modalCardCount = document.getElementById('modalCardCount');
 const modalFavoriteBtn = document.getElementById('modalFavoriteBtn');
 
+// Sauvegarder l'inventaire
 function saveInventory() {
-    currentUser.cards = inventory;
-    saveCurrentUser(currentUser);
+    if (!currentUserId) {
+        console.error("Pas d'ID utilisateur pour la sauvegarde");
+        return;
+    }
+    try {
+        localStorage.setItem(`inventory_${currentUserId}`, JSON.stringify(inventory));
+        console.log("✅ Inventaire sauvegardé:", inventory.length, "cartes");
+    } catch (err) {
+        console.error("❌ Erreur de sauvegarde:", err);
+    }
 }
 
-function sortInventory(inventory, sortBy) {
-    const sorted = [...inventory];
+// Trier l'inventaire
+function sortInventory(inv, sortBy) {
+    const sorted = [...inv];
     switch (sortBy) {
         case 'date':
             return sorted.sort((a, b) => b.date - a.date);
         case 'rarity':
-            const rarityOrder = { unique: 3, rare: 2, common: 1 };
-            return sorted.sort((a, b) => rarityOrder[b.rarity] - rarityOrder[a.rarity]);
+            const rarityOrder = { legendary: 3, rare: 2, common: 1 };
+            return sorted.sort((a, b) => (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0));
         case 'count':
             return sorted.sort((a, b) => b.count - a.count);
         default:
@@ -64,19 +79,38 @@ function sortInventory(inventory, sortBy) {
     }
 }
 
+// Filtrer l'inventaire
 function filterInventory() {
     let filtered = [...inventory];
+    
+    // Filtre par rareté
     if (currentRarity !== 'all') {
-        filtered = filtered.filter(card => card.rarity === currentRarity);
+        const rarityMap = {
+            'legendary': 'legendary',
+            'commun': 'common',
+            'rare': 'rare',
+            'favoris': 'favoris' // Filtre spécial pour les favoris
+        };
+        const targetRarity = rarityMap[currentRarity] || currentRarity;
+        
+        if (targetRarity === 'favoris') {
+            filtered = filtered.filter(card => card.favorite === true);
+        } else {
+            filtered = filtered.filter(card => card.rarity === targetRarity);
+        }
     }
+    
+    // Filtre par recherche
     if (searchQuery) {
         filtered = filtered.filter(card =>
             card.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
     }
+    
     return sortInventory(filtered, currentSort);
 }
 
+// Calculer les statistiques
 function calculateStats(statType) {
     switch (statType) {
         case 'total':
@@ -87,16 +121,19 @@ function calculateStats(statType) {
             return inventory.filter(c => c.rarity === 'common').reduce((s, c) => s + c.count, 0);
         case 'rare':
             return inventory.filter(c => c.rarity === 'rare').reduce((s, c) => s + c.count, 0);
-        case 'uniqueRarity':
-            return inventory.filter(c => c.rarity === 'unique').reduce((s, c) => s + c.count, 0);
+        case 'legendary':
+            return inventory.filter(c => c.rarity === 'legendary').reduce((s, c) => s + c.count, 0);
         default:
             return 0;
     }
 }
 
+// Afficher les cartes
 function renderCards() {
     const filtered = filterInventory();
     cardsGrid.innerHTML = '';
+
+    console.log("🎴 Affichage de", filtered.length, "cartes");
 
     if (filtered.length === 0) {
         emptyState.style.display = 'block';
@@ -110,7 +147,7 @@ function renderCards() {
     const rarityNames = {
         common: 'Commun',
         rare: 'Rare',
-        unique: 'Unique'
+        legendary: 'Légendaire'
     };
 
     filtered.forEach(card => {
@@ -123,9 +160,9 @@ function renderCards() {
                     <i class="fas fa-star"></i>
                 </button>
                 <div class="card-count">x${card.count}</div>
-                <div class="card-icon">🃏</div>
+                ${card.image ? `<img src="${card.image}" alt="${card.name}" class="card-image">` : '<div class="card-icon">🃏</div>'}
                 <div class="card-name">${card.name}</div>
-                <div class="card-rarity">${rarityNames[card.rarity]}</div>
+                <div class="card-rarity">${rarityNames[card.rarity] || card.rarity}</div>
             </div>
         `;
 
@@ -147,11 +184,13 @@ function renderCards() {
     updateStats();
 }
 
+// Mettre à jour les statistiques
 function updateStats() {
     const stat = calculateStats(statSelector.value);
     statValue.textContent = stat;
 }
 
+// Basculer favori
 function toggleFavorite(cardId) {
     const card = inventory.find(c => c.id === cardId);
     if (card) {
@@ -161,19 +200,27 @@ function toggleFavorite(cardId) {
     }
 }
 
+// Ouvrir la modal de carte
 function openCardModal(card) {
     selectedCard = card;
 
     const rarityNames = {
         common: 'Commun',
         rare: 'Rare',
-        unique: 'Unique'
+        legendary: 'Légendaire'
     };
 
     modalCard.className = `modal-card card ${card.rarity}`;
-    modalCardIcon.textContent = '🃏';
+    
+    // Afficher l'image si disponible
+    if (card.image) {
+        modalCardIcon.innerHTML = `<img src="${card.image}" alt="${card.name}" class="card-image">`;
+    } else {
+        modalCardIcon.textContent = '🃏';
+    }
+    
     modalCardName.textContent = card.name;
-    modalCardRarity.textContent = rarityNames[card.rarity];
+    modalCardRarity.textContent = rarityNames[card.rarity] || card.rarity;
     modalCardCount.textContent = `Possédé: x${card.count}`;
 
     if (card.favorite) {
@@ -187,25 +234,36 @@ function openCardModal(card) {
     cardModal.classList.add('active');
 }
 
-modalClose.addEventListener('click', () => {
-    cardModal.classList.remove('active');
-});
-
-cardModal.addEventListener('click', (e) => {
-    if (e.target === cardModal) {
+// Event listeners pour la modal
+if (modalClose) {
+    modalClose.addEventListener('click', () => {
         cardModal.classList.remove('active');
-    }
-});
+    });
+}
 
-modalFavoriteBtn.addEventListener('click', () => {
-    if (selectedCard) {
-        toggleFavorite(selectedCard.id);
-        openCardModal(selectedCard);
-    }
-});
+if (cardModal) {
+    cardModal.addEventListener('click', (e) => {
+        if (e.target === cardModal) {
+            cardModal.classList.remove('active');
+        }
+    });
+}
 
-statSelector.addEventListener('change', updateStats);
+if (modalFavoriteBtn) {
+    modalFavoriteBtn.addEventListener('click', () => {
+        if (selectedCard) {
+            toggleFavorite(selectedCard.id);
+            openCardModal(selectedCard);
+        }
+    });
+}
 
+// Event listener pour le sélecteur de stats
+if (statSelector) {
+    statSelector.addEventListener('change', updateStats);
+}
+
+// Event listeners pour les boutons de tri
 document.querySelectorAll('[data-sort]').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('[data-sort]').forEach(b => b.classList.remove('active'));
@@ -215,6 +273,7 @@ document.querySelectorAll('[data-sort]').forEach(btn => {
     });
 });
 
+// Event listeners pour les boutons de rareté
 document.querySelectorAll('[data-rarity]').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('[data-rarity]').forEach(b => b.classList.remove('active'));
@@ -224,38 +283,38 @@ document.querySelectorAll('[data-rarity]').forEach(btn => {
     });
 });
 
-searchInput.addEventListener('input', (e) => {
-    searchQuery = e.target.value;
-    renderCards();
-});
-
-document.querySelectorAll('.nav-item').forEach(item => {
-    item.addEventListener('click', () => {
-        if (!item.classList.contains('active') && !item.hasAttribute('href')) {
-            const label = item.querySelector('.nav-label').textContent;
-            alert(`La section "${label}" n'est pas encore disponible !`);
-        }
+// Event listener pour la recherche
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        renderCards();
     });
-});
+}
 
-function addCard(card) {
-    const existing = inventory.find(c => c.name === card.name);
-    if (existing) {
-        existing.count += card.count || 1;
+// Fonction d'initialisation
+function initialize() {
+    console.log("🚀 Initialisation de l'inventaire...");
+    
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+        console.error("❌ Pas d'utilisateur connecté");
+        // Créer un utilisateur par défaut pour les tests
+        const defaultUser = { id: 'default_user', name: 'Joueur' };
+        localStorage.setItem('current_user', JSON.stringify(defaultUser));
+        currentUserId = defaultUser.id;
     } else {
-        inventory.push({
-            id: Date.now(),
-            name: card.name,
-            rarity: card.rarity,
-            count: card.count || 1,
-            favorite: false,
-            date: Date.now()
-        });
+        console.log("👤 Utilisateur:", currentUser);
+        currentUserId = currentUser.id;
     }
-    saveInventory();
+    
+    inventory = initInventory();
+    
+    console.log("📦 Inventaire chargé:", inventory);
     renderCards();
 }
 
+// Démarrer l'application
 document.addEventListener('DOMContentLoaded', () => {
-    renderCards();
+    console.log("📄 DOM chargé, démarrage...");
+    initialize();
 });
