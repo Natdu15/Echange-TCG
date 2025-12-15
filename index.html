@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="icon" type="logo-tcg.png" href="logo-tcg.png">
+  <link rel="icon" type="image/png" href="logo-tcg.png">
   <title>Connexion Maximus TCG</title>
   <link rel="stylesheet" href="css/index.css">
 </head>
@@ -18,10 +18,38 @@
     </form>
     <p>Pas encore de compte ? <a href="inscription.html">Créer un compte</a></p>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/pg@8.11.3/lib/index.min.js"></script>
-  <script src="backend/index.js"></script>
+
+  <script>
+    // ←←← CHANGE CETTE LIGNE avec l’URL de ton API quand elle sera déployée
+    const API_URL = 'https://tcg-api.onrender.com'; // même URL que dans inscription.html
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch(`${API_URL}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          localStorage.setItem('userId', data.userId);
+          localStorage.setItem('userEmail', email);
+          localStorage.setItem('username', data.username || email);
+          window.location.href = 'jeu.html'; // page après connexion
+        } else {
+          alert(data.error || 'Email ou mot de passe incorrect');
+        }
+      } catch (err) {
+        alert('Impossible de contacter le serveur. Vérifie l’URL de l’API.');
+      }
+    });
+  </script>
 </body>
 </html>
-
-
-
