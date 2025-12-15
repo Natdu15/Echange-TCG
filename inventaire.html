@@ -8,9 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/inventaire.css">
     <link rel="stylesheet" href="css/footer.css">
+
 </head>
 <body>
-
+    <!-- Header -->
     <div class="header">
         <div class="header-content">
             <div class="logo">⚔️ TCG ARENA</div>
@@ -20,6 +21,7 @@
                     <option value="unique">Cartes uniques</option>
                     <option value="common">Cartes communes</option>
                     <option value="rare">Cartes rares</option>
+                    <option value="legendary">Cartes légendaires</option>
                 </select>
                 <div class="stat-display">
                     <i class="fas fa-box"></i>
@@ -42,9 +44,10 @@
             <div class="filter-group">
                 <span class="filter-label">Rareté:</span>
                 <button class="filter-btn active" data-rarity="all">Toutes</button>
-                <button class="filter-btn" data-rarity="uniques">Uniques</button>
                 <button class="filter-btn" data-rarity="commun">Commun</button>
                 <button class="filter-btn" data-rarity="rare">Rare</button>
+                <button class="filter-btn" data-rarity="legendary">Légendaire</button>
+                <button class="filter-btn" data-rarity="favoris">⭐ Favoris</button>
             </div>
 
             <div class="search-bar">
@@ -92,51 +95,17 @@
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <a href="accueil.html" class="nav-item">
-                <div class="nav-icon">🏠</div>
-                <span>Accueil</span>
-            </a>
-            <a href="inventaire.html" class="nav-item active">
-                <div class="nav-icon">🎒</div>
-                <span>Inventaire</span>
-            </a>
-            <a href="echange.html" class="nav-item ">
-                <div class="nav-icon">🔄</div>
-                <span>Échanges</span>
-            </a>
-            <a href="404.html" class="nav-item ">
-                <div class="nav-icon">⚔️</div>
-                <span>Combats</span>
-            </a>
-            <a href="Paramètres.html" class="nav-item">
-                <div class="nav-icon">⚙️</div>
-                <span>Paramètres</span>
-            </a>
-        </div>
-    </nav>
     <footer>
         <img src="footer.png" alt="Footer TCG Arena" class="footer-image">
 
         <div class="footer-text-content">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <p>TCG Arena - Le jeu de cartes à collectionner ultime. Ouvre des boosters, collectionne des cartes rares et échange avec d'autres joueurs. </p>
+                    <p>TCG Arena - Le jeu de cartes à collectionner ultime. Ouvre des boosters, collectionne des cartes
+                        rares et échange avec d'autres joueurs.</p>
                     <div class="social-icons">
                         <a href="https://discordapp.com/users/Nathan15000." title="Discord">DC</a>
                     </div>
-                </div>
-
-                <div class="footer-section">
-                    <h3>Liens rapides</h3>
-                    <ul>
-                        <li><a href="accueil.html">Accueil 🏠</a></li>
-                        <li><a href="inventaire.html">Inventaire 🎒</a></li>
-                        <li><a href="echange.html">Échanges🔄</a></li>
-                        <li><a href="liste.html">Liste des cartes 📝 </a></li>
-                    </ul>
                 </div>
             </div>
 
@@ -145,5 +114,34 @@
             </div>
         </div>
     </footer>
+
+    <nav class="bottom-nav">
+        <a class="nav-item active" href="accueil.html">
+            <span style="font-size: 1.5rem;">🏠</span>
+            <span>Accueil</span>
+        </a>
+
+        <a class="nav-item" href="inventaire.html">
+            <span style="font-size: 1.5rem;">🎒</span>
+            <span>Inventaire</span>
+        </a>
+
+        <a class="nav-item" href="echange.html">
+            <span style="font-size: 1.5rem;">🔄</span>
+            <span>Échanges</span>
+        </a>
+
+        <a class="nav-item" href="404.html">
+            <span style="font-size: 1.5rem;">⚔️</span>
+            <span>Combats</span>
+        </a>
+
+        <a class="nav-item" href="Paramètres.html">
+            <span style="font-size: 1.5rem;">⚙️</span>
+            <span>Paramètres</span>
+        </a>
+    </nav>
+
+    <script src="js/inventaire.js"></script>
 </body>
 </html>
