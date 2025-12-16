@@ -1,87 +1,450 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="logo-tcg.png" href="logo-tcg.png">
-    <title>Mes Amis - TCG</title>
-    <link rel="stylesheet" href="css/amis.css">
-    <link rel="stylesheet" href="css/footer.css">
-</head>
+// Base de données simulée d'utilisateurs (à remplacer par une vraie BD plus tard)
+const userDatabase = [
+    { id: 'user_1', username: 'Nathan', online: true },
+    { id: 'user_2', username: 'Maxime', online: false },
+    { id: 'user_3', username: 'Sophie', online: true },
+    { id: 'user_4', username: 'Lucas', online: false },
+    { id: 'user_5', username: 'Emma', online: true },
+    { id: 'user_6', username: 'Thomas', online: false },
+    { id: 'user_7', username: 'Chloe', online: true },
+    { id: 'user_8', username: 'Pierre', online: false }
+];
 
-<body>
-    <div class="main-content">
-        <div class="header">
-            <button class="btn-back" onclick="window.location.href='echange.html'">← Retour</button>
-            <h1>👥 Mes Amis</h1>
-        </div>
+let currentUser = null;
+let friends = [];
+let friendRequests = []; // Demandes reçues
+let sentRequests = []; // Demandes envoyées
+let currentTab = 'friends';
 
-        <div class="add-friend-section">
-            <h2>➕ Ajouter un ami</h2>
-            <div class="add-friend-form">
-                <input type="text" id="friendUsername" placeholder="Entrez le pseudo de votre ami..." maxlength="20">
-                <button class="btn-add" onclick="addFriend()">Ajouter</button>
+// Initialisation
+function init() {
+    loadCurrentUser();
+    loadFriends();
+    loadRequests();
+    updateOnlineStatus();
+    displayFriends();
+    displayRequests();
+    
+    // Mettre à jour le statut toutes les 30 secondes
+    setInterval(updateOnlineStatus, 30000);
+    
+    // Event listener pour Enter sur l'input de recherche
+    const searchInput = document.getElementById('searchUsername');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchUser();
+            }
+        });
+    }
+}
+
+// Charger l'utilisateur actuel
+function loadCurrentUser() {
+    const userData = localStorage.getItem('current_user');
+    if (userData) {
+        currentUser = JSON.parse(userData);
+    } else {
+        // Créer un utilisateur par défaut
+        currentUser = { id: 'default_user', name: 'Joueur' };
+        localStorage.setItem('current_user', JSON.stringify(currentUser));
+    }
+    console.log('👤 Utilisateur actuel:', currentUser);
+}
+
+// Charger les amis depuis localStorage
+function loadFriends() {
+    const storedFriends = localStorage.getItem(`friends_${currentUser.id}`);
+    if (storedFriends) {
+        friends = JSON.parse(storedFriends);
+        console.log('✅ Amis chargés:', friends.length);
+    }
+}
+
+// Charger les demandes depuis localStorage
+function loadRequests() {
+    const storedRequests = localStorage.getItem(`friend_requests_${currentUser.id}`);
+    if (storedRequests) {
+        friendRequests = JSON.parse(storedRequests);
+    }
+    
+    const storedSent = localStorage.getItem(`sent_requests_${currentUser.id}`);
+    if (storedSent) {
+        sentRequests = JSON.parse(storedSent);
+    }
+    
+    console.log('📬 Demandes reçues:', friendRequests.length);
+    console.log('📤 Demandes envoyées:', sentRequests.length);
+}
+
+// Sauvegarder les amis dans localStorage
+function saveFriends() {
+    localStorage.setItem(`friends_${currentUser.id}`, JSON.stringify(friends));
+    console.log('💾 Amis sauvegardés');
+}
+
+// Sauvegarder les demandes dans localStorage
+function saveRequests() {
+    localStorage.setItem(`friend_requests_${currentUser.id}`, JSON.stringify(friendRequests));
+    localStorage.setItem(`sent_requests_${currentUser.id}`, JSON.stringify(sentRequests));
+    console.log('💾 Demandes sauvegardées');
+}
+
+// Mettre à jour le statut en ligne des amis
+function updateOnlineStatus() {
+    friends.forEach(friend => {
+        const user = userDatabase.find(u => u.username.toLowerCase() === friend.name.toLowerCase());
+        if (user) {
+            friend.online = user.online;
+        }
+    });
+    saveFriends();
+    if (currentTab === 'friends') {
+        displayFriends();
+    }
+}
+
+// Rechercher un utilisateur
+function searchUser() {
+    const input = document.getElementById('searchUsername');
+    const username = input.value.trim();
+    const resultsDiv = document.getElementById('searchResults');
+    
+    if (!username) {
+        resultsDiv.innerHTML = '';
+        return;
+    }
+    
+    // Chercher dans la base de données
+    const user = userDatabase.find(u => u.username.toLowerCase() === username.toLowerCase());
+    
+    if (!user) {
+        resultsDiv.innerHTML = `
+            <div class="no-results">
+                <div class="no-results-icon">❌</div>
+                <h3>Utilisateur introuvable</h3>
+                <p>Aucun utilisateur ne correspond à "${username}"</p>
             </div>
-            <p class="info-text">💡 Demandez le pseudo de votre ami pour l'ajouter</p>
-        </div>
-
-        <div class="friends-list-section">
-            <h2>📋 Liste d'amis (<span id="friendCount">0</span>)</h2>
-            <div id="friendsList" class="friends-list">
-                <!-- Les amis seront affichés ici -->
+        `;
+        return;
+    }
+    
+    // Vérifier si c'est déjà un ami
+    if (friends.some(f => f.name.toLowerCase() === user.username.toLowerCase())) {
+        resultsDiv.innerHTML = `
+            <div class="no-results">
+                <div class="no-results-icon">✅</div>
+                <h3>Déjà dans vos amis</h3>
+                <p>${user.username} est déjà dans votre liste d'amis</p>
             </div>
-        </div>
-    </div>
-
-      <footer>
-        <img src="footer.png" alt="Footer TCG Arena" class="footer-image">
-
-        <div class="footer-text-content">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <p>TCG Arena - Le jeu de cartes à collectionner ultime. Ouvre des boosters, collectionne des cartes
-                        rares et échange avec d'autres joueurs.</p>
-                    <div class="social-icons">
-                        <a href="https://discordapp.com/users/Nathan15000." title="Discord">DC</a>
+        `;
+        return;
+    }
+    
+    // Vérifier si une demande est déjà envoyée
+    const alreadySent = sentRequests.some(r => r.username.toLowerCase() === user.username.toLowerCase());
+    
+    resultsDiv.innerHTML = `
+        <div class="user-result">
+            <div class="friend-info">
+                <div class="friend-avatar">${user.username.substring(0, 2).toUpperCase()}</div>
+                <div class="friend-details">
+                    <div class="friend-name">${user.username}</div>
+                    <div class="friend-status">
+                        ${user.online ? '🟢 En ligne' : '⚫ Hors ligne'}
                     </div>
                 </div>
-
             </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2025/2026 TCG Arena. Tous droits réservés.</p>
-            </div>
+            ${alreadySent 
+                ? '<button class="btn-disabled" disabled>✅ Demande envoyée</button>'
+                : '<button class="btn-add" onclick="sendFriendRequest(\'' + user.id + '\', \'' + user.username + '\')">➕ Ajouter</button>'
+            }
         </div>
-   </footer>
+    `;
+}
 
-    <nav class="bottom-nav">
-        <a class="nav-item" href="accueil.html">
-            <span style="font-size: 1.5rem;">🏠</span>
-            <span>Accueil</span>
-        </a>
+// Envoyer une demande d'ami
+function sendFriendRequest(userId, username) {
+    const request = {
+        id: Date.now(),
+        userId: userId,
+        username: username,
+        sentAt: Date.now()
+    };
+    
+    sentRequests.push(request);
+    saveRequests();
+    
+    showNotification(`✅ Demande d'ami envoyée à ${username}`, 'success');
+    console.log('📤 Demande envoyée à:', username);
+    
+    // Rafraîchir la recherche
+    searchUser();
+    updateCounts();
+}
 
-        <a class="nav-item" href="inventaire.html">
-            <span style="font-size: 1.5rem;">🎒</span>
-            <span>Inventaire</span>
-        </a>
+// Accepter une demande d'ami
+function acceptRequest(requestId) {
+    const request = friendRequests.find(r => r.id === requestId);
+    if (!request) return;
+    
+    // Ajouter aux amis
+    const user = userDatabase.find(u => u.username.toLowerCase() === request.username.toLowerCase());
+    const newFriend = {
+        id: Date.now(),
+        name: request.username,
+        online: user ? user.online : false,
+        addedAt: Date.now()
+    };
+    
+    friends.push(newFriend);
+    saveFriends();
+    
+    // Retirer de la liste des demandes
+    friendRequests = friendRequests.filter(r => r.id !== requestId);
+    saveRequests();
+    
+    showNotification(`✅ ${request.username} a été ajouté à vos amis`, 'success');
+    console.log('✅ Demande acceptée:', request.username);
+    
+    displayRequests();
+    displayFriends();
+    updateCounts();
+}
 
-        <a class="nav-item active" href="echange.html">
-            <span style="font-size: 1.5rem;">🔄</span>
-            <span>Échanges</span>
-        </a>
+// Refuser une demande d'ami
+function declineRequest(requestId) {
+    const request = friendRequests.find(r => r.id === requestId);
+    if (!request) return;
+    
+    friendRequests = friendRequests.filter(r => r.id !== requestId);
+    saveRequests();
+    
+    showNotification(`❌ Demande de ${request.username} refusée`, 'info');
+    console.log('❌ Demande refusée:', request.username);
+    
+    displayRequests();
+    updateCounts();
+}
 
-        <a class="nav-item" href="404.html">
-            <span style="font-size: 1.5rem;">⚔️</span>
-            <span>Combats</span>
-        </a>
+// Annuler une demande envoyée
+function cancelSentRequest(requestId) {
+    const request = sentRequests.find(r => r.id === requestId);
+    if (!request) return;
+    
+    sentRequests = sentRequests.filter(r => r.id !== requestId);
+    saveRequests();
+    
+    showNotification(`🗑️ Demande annulée`, 'info');
+    console.log('🗑️ Demande annulée:', request.username);
+    
+    displayRequests();
+    updateCounts();
+}
 
-        <a class="nav-item" href="Paramètres.html">
-            <span style="font-size: 1.5rem;">⚙️</span>
-            <span>Paramètres</span>
-        </a>
-    </nav>
+// Supprimer un ami
+function removeFriend(friendId) {
+    const friend = friends.find(f => f.id === friendId);
+    if (!friend) return;
+    
+    if (confirm(`Êtes-vous sûr de vouloir supprimer ${friend.name} de vos amis ?`)) {
+        friends = friends.filter(f => f.id !== friendId);
+        saveFriends();
+        displayFriends();
+        showNotification(`🗑️ ${friend.name} a été retiré de vos amis`, 'info');
+        console.log('🗑️ Ami supprimé:', friend.name);
+        updateCounts();
+    }
+}
 
-    <script src="js/amis.js"></script>
-</body>
+// Afficher les amis
+function displayFriends() {
+    const list = document.getElementById('friendsList');
+    const countEl = document.getElementById('friendCount');
+    
+    countEl.textContent = friends.length;
+    
+    if (friends.length === 0) {
+        list.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">👥</div>
+                <h3>Aucun ami</h3>
+                <p>Recherchez des utilisateurs pour les ajouter en amis</p>
+            </div>
+        `;
+        return;
+    }
+    
+    // Trier par statut (en ligne d'abord) puis par nom
+    const sortedFriends = [...friends].sort((a, b) => {
+        if (a.online !== b.online) {
+            return b.online ? 1 : -1;
+        }
+        return a.name.localeCompare(b.name);
+    });
+    
+    list.innerHTML = '';
+    
+    sortedFriends.forEach(friend => {
+        const friendCard = document.createElement('div');
+        friendCard.className = `friend-card ${friend.online ? 'online' : 'offline'}`;
+        
+        const initials = friend.name.substring(0, 2).toUpperCase();
+        
+        friendCard.innerHTML = `
+            <div class="friend-info">
+                <div class="friend-avatar">${initials}</div>
+                <div class="friend-details">
+                    <div class="friend-name">${friend.name}</div>
+                    <div class="friend-status">
+                        ${friend.online ? '🟢 En ligne' : '⚫ Hors ligne'}
+                    </div>
+                </div>
+            </div>
+            <div class="friend-actions">
+                ${friend.online ? '<button class="btn-trade" onclick="tradeWithFriend(' + friend.id + ')">💱 Trade</button>' : ''}
+                <button class="btn-remove" onclick="removeFriend(${friend.id})">🗑️</button>
+            </div>
+        `;
+        
+        list.appendChild(friendCard);
+    });
+}
 
-</html>
+// Afficher les demandes
+function displayRequests() {
+    const requestsList = document.getElementById('requestsList');
+    const sentList = document.getElementById('sentRequestsList');
+    const countEl = document.getElementById('requestCount');
+    
+    countEl.textContent = friendRequests.length;
+    
+    // Demandes reçues
+    if (friendRequests.length === 0) {
+        requestsList.innerHTML = `
+            <div class="empty-state-small">
+                <p>Aucune demande reçue</p>
+            </div>
+        `;
+    } else {
+        requestsList.innerHTML = '';
+        friendRequests.forEach(request => {
+            const requestCard = document.createElement('div');
+            requestCard.className = 'request-card';
+            const initials = request.username.substring(0, 2).toUpperCase();
+            
+            requestCard.innerHTML = `
+                <div class="friend-info">
+                    <div class="friend-avatar">${initials}</div>
+                    <div class="friend-details">
+                        <div class="friend-name">${request.username}</div>
+                        <div class="friend-status">Demande d'ami</div>
+                    </div>
+                </div>
+                <div class="friend-actions">
+                    <button class="btn-accept" onclick="acceptRequest(${request.id})">✅ Accepter</button>
+                    <button class="btn-decline" onclick="declineRequest(${request.id})">❌ Refuser</button>
+                </div>
+            `;
+            requestsList.appendChild(requestCard);
+        });
+    }
+    
+    // Demandes envoyées
+    if (sentRequests.length === 0) {
+        sentList.innerHTML = `
+            <div class="empty-state-small">
+                <p>Aucune demande envoyée</p>
+            </div>
+        `;
+    } else {
+        sentList.innerHTML = '';
+        sentRequests.forEach(request => {
+            const requestCard = document.createElement('div');
+            requestCard.className = 'request-card';
+            const initials = request.username.substring(0, 2).toUpperCase();
+            
+            requestCard.innerHTML = `
+                <div class="friend-info">
+                    <div class="friend-avatar">${initials}</div>
+                    <div class="friend-details">
+                        <div class="friend-name">${request.username}</div>
+                        <div class="friend-status">En attente...</div>
+                    </div>
+                </div>
+                <div class="friend-actions">
+                    <button class="btn-cancel" onclick="cancelSentRequest(${request.id})">🗑️ Annuler</button>
+                </div>
+            `;
+            sentList.appendChild(requestCard);
+        });
+    }
+}
+
+// Changer d'onglet
+function switchTab(tab) {
+    currentTab = tab;
+    
+    // Mettre à jour les boutons
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // Mettre à jour le contenu
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    if (tab === 'friends') {
+        document.getElementById('friendsTab').classList.add('active');
+    } else if (tab === 'requests') {
+        document.getElementById('requestsTab').classList.add('active');
+    } else if (tab === 'search') {
+        document.getElementById('searchTab').classList.add('active');
+    }
+}
+
+// Mettre à jour les compteurs
+function updateCounts() {
+    document.getElementById('friendCount').textContent = friends.length;
+    document.getElementById('requestCount').textContent = friendRequests.length;
+}
+
+// Aller à la page de trade avec cet ami
+function tradeWithFriend(friendId) {
+    const friend = friends.find(f => f.id === friendId);
+    if (friend) {
+        localStorage.setItem('selectedFriendForTrade', JSON.stringify(friend));
+        window.location.href = 'trade.html';
+    }
+}
+
+// Afficher une notification
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+    
+    setTimeout(() => notification.classList.add('show'), 10);
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Ajouter des demandes de test (à supprimer en production)
+function addTestRequests() {
+    if (friendRequests.length === 0) {
+        friendRequests = [
+            { id: Date.now(), userId: 'user_2', username: 'Maxime', sentAt: Date.now() - 3600000 },
+            { id: Date.now() + 1, userId: 'user_3', username: 'Sophie', sentAt: Date.now() - 7200000 }
+        ];
+        saveRequests();
+        displayRequests();
+        updateCounts();
+    }
+}
+
+// Démarrer l'application
+init();
+// Décommenter pour ajouter des demandes de test
+// addTestRequests();
