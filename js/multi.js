@@ -1,3 +1,7 @@
+// multi.js – version finale avec ajout de cartes dans la base de données + localStorage
+
+const API_URL = 'https://tcg-api-378m.onrender.com'; // ← TON API
+
 const cardDatabase = [
     // Common cards (60% chance)
     { id: 1, name: "Gourroux du Bios", rarity: "common", image: "cartes-pokémon/bios.png" },
@@ -20,7 +24,6 @@ const cardDatabase = [
     { id: 18, name: "Centre Hospitalier", rarity: "common", image: "cartes-pokémon/bourg.png" },
     { id: 19, name: "Garage", rarity: "common", image: "cartes-pokémon/garage.png" },
     { id: 20, name: "Victime", rarity: "common", image: "cartes-pokémon/victime.png" },
-
     // Rare cards (30% chance)
     { id: 21, name: "Sermonien", rarity: "rare", image: "cartes-pokémon/bergeron.png" },
     { id: 22, name: "Boost de Visibilité", rarity: "rare", image: "cartes-pokémon/ciril.png" },
@@ -37,7 +40,6 @@ const cardDatabase = [
     { id: 33, name: "Discord", rarity: "rare", image: "cartes-pokémon/discord.png" },
     { id: 34, name: "France Travail", rarity: "rare", image: "cartes-pokémon/travail.png" },
     { id: 35, name: "Twitter (X)", rarity: "rare", image: "cartes-pokémon/x.png" },
-
     // Legendary cards (10% chance)
     { id: 36, name: "Dieu Suprême", rarity: "legendary", image: "cartes-pokémon/dieu.png" },
     { id: 37, name: "Grollemund", rarity: "legendary", image: "cartes-pokémon/Grollemund.png" },
@@ -57,7 +59,6 @@ function createBubbles() {
     const bubblesContainer = document.getElementById('bubbles');
     if (!bubblesContainer) return;
     const bubbleCount = 15;
-
     for (let i = 0; i < bubbleCount; i++) {
         const bubble = document.createElement('div');
         bubble.classList.add('bubble');
@@ -72,7 +73,6 @@ function createBubbles() {
         bubblesContainer.appendChild(bubble);
     }
 }
-
 createBubbles();
 
 let allPackCards = [];
@@ -114,7 +114,6 @@ const openingPack = document.getElementById('openingPack');
 const packWrapper = document.getElementById('packWrapper');
 const progressBar = document.getElementById('progressBar');
 const instruction = document.getElementById('instruction');
-
 let progress = 0;
 let isOpening = false;
 let startOpenX = 0;
@@ -147,7 +146,6 @@ function completeOpening() {
     const cardsContainer = document.getElementById('cardsContainer');
     const backButton = document.querySelector('.back-button');
     const infoDisplay = document.querySelector('.info-display');
-
     if (openingPack) {
         openingPack.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
         openingPack.style.opacity = '0';
@@ -164,9 +162,7 @@ function completeOpening() {
     }
     if (instruction) instruction.style.display = 'none';
     if (cardsContainer) cardsContainer.classList.add('active');
-
     let packIndex = 0;
-
     function showNextPack() {
         if (packIndex >= 20) {
             setTimeout(() => {
@@ -175,10 +171,8 @@ function completeOpening() {
             }, 500);
             return;
         }
-
         const packCards = generatePackCards();
         allPackCards = allPackCards.concat(packCards);
-
         packCards.forEach((card, index) => {
             setTimeout(() => {
                 const cardElement = document.createElement('div');
@@ -193,76 +187,98 @@ function completeOpening() {
                 setTimeout(() => { cardElement.classList.add('reveal'); }, 50);
             }, index * 400);
         });
-
         packIndex++;
         setTimeout(() => { showNextPack(); }, 1200);
     }
-
     showNextPack();
 }
 
-function addCardsToInventory() {
+// Fonction pour ajouter les cartes à la base de données
+async function addCardsToDB() {
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    console.error('Pas d’utilisateur connecté pour sauvegarder en base');
+    return;
+  }
+
+  for (const card of allPackCards) {
     try {
-        console.log("🎴 Ajout des cartes à l'inventaire...");
-        let currentUser = null;
-        const userData = localStorage.getItem("current_user");
-        if (!userData) {
-            console.log("Pas d'utilisateur, création d'un utilisateur par défaut");
-            currentUser = { id: 'default_user', name: 'Joueur' };
-            localStorage.setItem('current_user', JSON.stringify(currentUser));
-        } else {
-            currentUser = JSON.parse(userData);
-        }
-
-        const userId = currentUser.id;
-        console.log("👤 Utilisateur:", userId);
-
-        let inventory = [];
-        const inventoryData = localStorage.getItem(`inventory_${userId}`);
-        if (inventoryData) {
-            inventory = JSON.parse(inventoryData);
-            console.log("📦 Inventaire actuel:", inventory.length, "cartes");
-        } else {
-            console.log("📦 Création d'un nouvel inventaire");
-        }
-
-        allPackCards.forEach(card => {
-            const existing = inventory.find(c => c.name === card.name);
-            if (existing) {
-                existing.count += 1;
-                console.log("➕ Carte existante:", card.name, "→ x" + existing.count);
-            } else {
-                const newCard = {
-                    id: Date.now() + Math.random(),
-                    name: card.name,
-                    rarity: card.rarity,
-                    image: card.image,
-                    count: 1,
-                    favorite: false,
-                    date: Date.now()
-                };
-                inventory.push(newCard);
-                console.log("🆕 Nouvelle carte:", card.name);
-            }
-        });
-
-        localStorage.setItem(`inventory_${userId}`, JSON.stringify(inventory));
-        console.log('✅ Cartes ajoutées à la collection!');
-        console.log('📦 Total:', inventory.length, 'cartes différentes');
+      const response = await fetch(`${API_URL}/api/unlock`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, carteId: card.id })
+      });
+      if (response.ok) {
+        console.log('✅ Carte ajoutée dans la base :', card.name);
+      }
     } catch (err) {
-        console.error("❌ Erreur lors de l'ajout des cartes:", err);
-        alert("Erreur lors de la sauvegarde: " + err.message);
+      console.error('Erreur ajout carte dans la base', err);
     }
+  }
+}
+
+// Ajout des cartes (local + base)
+async function addCardsToInventory() {
+  console.log("🎴 Ajout des cartes à l'inventaire...");
+
+  let currentUser = null;
+  const userData = localStorage.getItem("current_user");
+  if (!userData) {
+    console.log("Pas d'utilisateur, création d'un utilisateur par défaut");
+    currentUser = { id: 'default_user', name: 'Joueur' };
+    localStorage.setItem('current_user', JSON.stringify(currentUser));
+  } else {
+    currentUser = JSON.parse(userData);
+  }
+
+  const userId = currentUser.id;
+  console.log("👤 Utilisateur:", userId);
+
+  let inventory = [];
+  const inventoryData = localStorage.getItem(`inventory_${userId}`);
+  if (inventoryData) {
+    inventory = JSON.parse(inventoryData);
+    console.log("📦 Inventaire actuel:", inventory.length, "cartes");
+  } else {
+    console.log("📦 Création d'un nouvel inventaire");
+  }
+
+  allPackCards.forEach(card => {
+    const existing = inventory.find(c => c.name === card.name);
+    if (existing) {
+      existing.count += 1;
+      console.log("➕ Carte existante:", card.name, "→ x" + existing.count);
+    } else {
+      const newCard = {
+        id: Date.now() + Math.random(),
+        name: card.name,
+        rarity: card.rarity,
+        image: card.image,
+        count: 1,
+        favorite: false,
+        date: Date.now()
+      };
+      inventory.push(newCard);
+      console.log("🆕 Nouvelle carte:", card.name);
+    }
+  });
+
+  localStorage.setItem(`inventory_${userId}`, JSON.stringify(inventory));
+  console.log('✅ Cartes ajoutées à la collection locale !');
+  console.log('📦 Total:', inventory.length, 'cartes différentes');
+
+  // Ajout dans la base de données
+  await addCardsToDB();
 }
 
 function finishOpening() {
-    console.log("🏁 Finalisation de l'ouverture...");
-    addCardsToInventory();
-    setTimeout(() => {
-        window.location.href = 'inventaire.html';
-    }, 1000);
+  console.log("🏁 Finalisation de l'ouverture...");
+  addCardsToInventory();
+  setTimeout(() => {
+    window.location.href = 'inventaire.html';
+  }, 1000);
 }
 
 function goBack() {
-    window.history.back();
+  window.history.back();
 }
