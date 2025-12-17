@@ -12,9 +12,8 @@
   <div class="container">
     <h2>Mon Inventaire</h2>
 
-    <!-- Ton contenu d'origine – je ne touche à rien -->
     <div id="cardsGrid">
-      <!-- Les cartes s'affichent ici comme avant -->
+      <!-- Les cartes seront ajoutées ici par inventaire.js -->
     </div>
 
     <div id="emptyState" style="display:none;">
@@ -22,63 +21,21 @@
       <button onclick="openPack()">Ouvrir un pack gratuit</button>
     </div>
 
-    <!-- Le reste de ton HTML (modal, filtres, boutons, etc.) reste exactement comme tu l’avais -->
-    <!-- Tu peux garder tout ton code HTML actuel ici -->
+    <!-- Ton modal d'origine (je garde exactement ce que tu as) -->
+    <div id="cardModal" class="modal">
+      <div class="modal-content">
+        <span id="modalClose" class="close">&times;</span>
+        <div id="modalCard" class="card">
+          <div id="modalCardIcon"></div>
+          <div id="modalCardName"></div>
+          <div id="modalCardRarity"></div>
+          <div id="modalCardCount"></div>
+          <button id="modalFavoriteBtn">Ajouter aux favoris</button>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Ton script inventaire.js (tri, modal, affichage) -->
   <script src="js/inventaire.js"></script>
-
-  <!-- Petit script supplémentaire pour le stockage en base (invisible pour le joueur) -->
-  <script>
-    const API_URL = 'https://tcg-api-378m.onrender.com'; // ← ton API
-
-    // Vérifie si connecté
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-      alert('Tu dois être connecté pour voir ton inventaire');
-      window.location.href = 'index.html';
-    }
-
-    // Fonction pour charger l'inventaire depuis la base (remplace ton localStorage)
-    async function loadFromDB() {
-      try {
-        const res = await fetch(`${API_URL}/api/collection?userId=${userId}`);
-        const data = await res.json();
-        // On remplace l’inventaire local par celui de la base
-        inventory = data;
-        console.log('Inventaire chargé depuis la base :', inventory.length, 'cartes');
-        renderInventory(); // ta fonction d'affichage d'origine
-      } catch (err) {
-        alert('Erreur chargement inventaire depuis le serveur');
-      }
-    }
-
-    // Fonction pour sauvegarder une nouvelle carte dans la base
-    async function saveToDB(carteId) {
-      try {
-        const res = await fetch(`${API_URL}/api/unlock`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, carteId })
-        });
-        if (res.ok) {
-          loadFromDB(); // recharge après ajout
-        }
-      } catch (err) {
-        console.error('Erreur sauvegarde');
-      }
-    }
-
-    // Remplace ta fonction openPack() ou addCard() par celle-ci
-    async function openPack() {
-      const randomId = Math.floor(Math.random() * 200) + 1;
-      await saveToDB(randomId);
-      alert('Nouvelle carte débloquée !');
-    }
-
-    // Au chargement, on charge depuis la base
-    document.addEventListener('DOMContentLoaded', loadFromDB);
-  </script>
 </body>
 </html>
