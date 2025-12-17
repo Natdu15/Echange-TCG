@@ -7,13 +7,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connexion directe à ta base TCG PG (ton Internal URL)
+// Connexion à ta base
 const pool = new Pool({
   connectionString: 'postgresql://tcg_pg_user:z0rgTFh1t7vgtUcyZyveWvVRGDdTq2EZ@dpg-d4i3fl9r0fns73ajbep0-a/tcg_pg',
   ssl: { rejectUnauthorized: false }
 });
 
-// Route d'accueil pour tester si l'API est en vie
+// Route d'accueil
 app.get('/', (req, res) => {
   res.json({ message: 'API Maximus TCG en ligne !' });
 });
@@ -21,9 +21,7 @@ app.get('/', (req, res) => {
 // Inscription
 app.post('/auth/register', async (req, res) => {
   const { pseudo, email, mot_de_passe } = req.body;
-  if (!pseudo || !email || !mot_de_passe) {
-    return res.status(400).json({ error: 'Tous les champs sont requis' });
-  }
+  if (!pseudo || !email || !mot_de_passe) return res.status(400).json({ error: 'Tous les champs requis' });
 
   const hash = await bcrypt.hash(mot_de_passe, 10);
   try {
@@ -33,7 +31,6 @@ app.post('/auth/register', async (req, res) => {
     );
     res.json({ success: true, userId: result.rows[0].id_utilisateur });
   } catch (e) {
-    console.error(e);
     res.status(400).json({ error: 'Pseudo ou email déjà utilisé' });
   }
 });
@@ -41,19 +38,44 @@ app.post('/auth/register', async (req, res) => {
 // Connexion
 app.post('/auth/login', async (req, res) => {
   const { email, mot_de_passe } = req.body;
-  if (!email || !mot_de_passe) {
-    return res.status(400).json({ error: 'Email et mot de passe requis' });
-  }
-
   try {
     const { rows } = await pool.query('SELECT id_utilisateur, mot_de_passe FROM utilisateur WHERE email = $1', [email.toLowerCase()]);
     if (!rows[0] || !(await bcrypt.compare(mot_de_passe, rows[0].mot_de_passe))) {
-      return res.status(401).json({ error: 'Mauvais email ou mot de passe' });
+      return res.status(401).json({ error: 'Mauvais identifiants' });
     }
     res.json({ success: true, userId: rows[0].id_utilisateur });
   } catch (e) {
-    console.error(e);
     res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// Charger l'inventaire
+app.get('/api/collection', async (req, res) => {
+  const { userId } = req.query;
+  if (!userId) return res.status(400).json({ error: 'userId requis' });
+
+  try {
+    const { rows } = await pool.query('SELECT id_carte as carte_id, quantite FROM carte_utilisateur WHERE id_utilisateur = $1', [userId]);
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: 'Erreur chargement inventaire' });
+  }
+});
+
+// Ajouter une carte (débloquer)
+app.post('/api/unlock', async (req, res) => {
+  const { userId, carteId } = req.body;
+  if (!userId || !carteId) return res.status(400).json({ error: 'userId et carteId requis' });
+
+  try {
+    await pool.query(
+      `INSERT INTO carte_utilisateur(id_utilisateur, id_carte, quantite) VALUES($1, $2, 1)
+       ON CONFLICT (id_utilisateur, id_carte) DO UPDATE SET quantite = carte_utilisateur.quantite + 1`,
+      [userId, carteId]
+    );
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Erreur ajout carte' });
   }
 });
 
