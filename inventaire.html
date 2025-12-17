@@ -1,146 +1,115 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TCG Arena - Inventaire</title>
-    <link rel="icon" type="logo-tcg.png" href="logo-tcg.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/inventaire.css">
-    <link rel="stylesheet" href="css/footer.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="logo-tcg.png">
+  <title>Inventaire - Maximus TCG</title>
+  <link rel="stylesheet" href="css/index.css">
+  <!-- Ajoute ton CSS spécifique à l’inventaire si tu en as un -->
+  <style>
+    /* Exemple rapide si tu n’as pas de CSS dédié */
+    body { margin: 0; font-family: Arial, sans-serif; color: white; }
+    .background-jeux { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: url('background.jpg') center/cover; filter: blur(5px); z-index: -1; }
+    .container { padding: 20px; text-align: center; }
+    #cardsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; margin-top: 20px; }
+    .card-item { background: rgba(0,0,0,0.7); border-radius: 10px; padding: 10px; }
+    .card-item img { width: 100%; border-radius: 8px; }
+    .card-count { font-weight: bold; margin-top: 5px; }
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="header-content">
-            <div class="logo">⚔️ TCG ARENA</div>
-            <div class="header-stats">
-                <select class="stat-selector" id="statSelector">
-                    <option value="total">Total de cartes</option>
-                    <option value="common">Cartes communes</option>
-                    <option value="rare">Cartes rares</option>
-                    <option value="legendary">Cartes légendaires</option>
-                </select>
-                <div class="stat-display">
-                    <i class="fas fa-box"></i>
-                    <span id="statValue">0</span>
-                </div>
-            </div>
-        </div>
+  <div class="background-jeux"></div>
+  <div class="container">
+    <h2>Mon Inventaire</h2>
+    <p>Bienvenue <span id="username-display">Joueur</span> !</p>
+
+    <div id="cardsGrid">
+      <!-- Les cartes seront ajoutées ici par JS -->
     </div>
 
-    <!-- Filters -->
-    <div class="filters-section">
-        <div class="filters-content">
-            <div class="filter-group">
-                <span class="filter-label">Trier par:</span>
-                <button class="filter-btn active" data-sort="date">Date</button>
-                <button class="filter-btn" data-sort="rarity">Rareté</button>
-                <button class="filter-btn" data-sort="count">Quantité</button>
-            </div>
-            
-            <div class="filter-group">
-                <span class="filter-label">Rareté:</span>
-                <button class="filter-btn active" data-rarity="all">Toutes</button>
-                <button class="filter-btn" data-rarity="commun">Commun</button>
-                <button class="filter-btn" data-rarity="rare">Rare</button>
-                <button class="filter-btn" data-rarity="legendary">Légendaire</button>
-                <button class="filter-btn" data-rarity="favoris">⭐ Favoris</button>
-            </div>
-
-            <div class="search-bar">
-                <input type="text" placeholder="Rechercher une carte..." id="searchInput">
-                <i class="fas fa-search"></i>
-            </div>
-        </div>
+    <div id="emptyState" style="display:none;">
+      <p>Aucune carte dans ton inventaire pour le moment.</p>
+      <button onclick="openPack()">Ouvrir un pack gratuit</button>
     </div>
+  </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="inventory-header">
-            <h1 class="inventory-title">📦 Mon Inventaire</h1>
-            <p class="inventory-subtitle" id="inventorySubtitle">Votre collection de cartes</p>
-        </div>
+  <script>
+    const API_URL = 'https://tcg-api-378m.onrender.com'; // ← TON API
 
-        <div class="cards-grid" id="cardsGrid">
-            <!-- Les cartes seront générées ici -->
-        </div>
+    let inventory = [];
 
-        <div class="empty-state" id="emptyState" style="display: none;">
-            <div class="empty-icon">📭</div>
-            <div class="empty-text">Aucune carte trouvée</div>
-            <div class="empty-subtext">Ouvrez des boosters pour obtenir des cartes !</div>
-        </div>
-    </div>
+    // Vérifie si l'utilisateur est connecté
+    const userId = localStorage.getItem('userId');
+    const pseudo = localStorage.getItem('pseudo') || localStorage.getItem('userEmail') || 'Joueur';
 
-    <!-- Card Detail Modal -->
-    <div class="card-modal" id="cardModal">
-        <div class="card-modal-content">
-            <button class="modal-close" id="modalClose">
-                <i class="fas fa-times"></i>
-            </button>
-            <div class="modal-card" id="modalCard">
-                <div class="card-icon" id="modalCardIcon">🃏</div>
-                <div class="modal-info">
-                    <div class="modal-card-name" id="modalCardName">Carte</div>
-                    <div class="modal-card-rarity" id="modalCardRarity">Commun</div>
-                    <div class="modal-card-count" id="modalCardCount">Possédé: x1</div>
-                </div>
-            </div>
-            <button class="modal-favorite-btn" id="modalFavoriteBtn">
-                <i class="fas fa-star"></i> Ajouter aux favoris
-            </button>
-        </div>
-    </div>
+    if (!userId) {
+      alert('Tu dois être connecté pour voir ton inventaire');
+      window.location.href = 'index.html';
+    }
 
-    <footer>
-        <img src="footer.png" alt="Footer TCG Arena" class="footer-image">
+    document.getElementById('username-display').textContent = pseudo;
 
-        <div class="footer-text-content">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <p>TCG Arena - Le jeu de cartes à collectionner ultime. Ouvre des boosters, collectionne des cartes
-                        rares et échange avec d'autres joueurs.</p>
-                    <div class="social-icons">
-                        <a href="https://discordapp.com/users/Nathan15000." title="Discord">DC</a>
-                    </div>
-                </div>
-            </div>
+    // Charger l'inventaire depuis l’API
+    async function loadInventory() {
+      try {
+        const response = await fetch(`${API_URL}/api/collection?userId=${userId}`);
+        const data = await response.json();
 
-            <div class="footer-bottom">
-                <p>&copy; 2025/2026 TCG Arena. Tous droits réservés.</p>
-            </div>
-        </div>
-    </footer>
+        inventory = data; // data est un tableau [{carte_id, quantite}, ...]
 
-    <nav class="bottom-nav">
-        <a class="nav-item active" href="accueil.html">
-            <span style="font-size: 1.5rem;">🏠</span>
-            <span>Accueil</span>
-        </a>
+        if (inventory.length === 0) {
+          document.getElementById('emptyState').style.display = 'block';
+          document.getElementById('cardsGrid').innerHTML = '';
+        } else {
+          document.getElementById('emptyState').style.display = 'none';
+          renderCards();
+        }
+      } catch (err) {
+        alert('Erreur lors du chargement de l’inventaire');
+        console.error(err);
+      }
+    }
 
-        <a class="nav-item" href="inventaire.html">
-            <span style="font-size: 1.5rem;">🎒</span>
-            <span>Inventaire</span>
-        </a>
+    // Afficher les cartes
+    function renderCards() {
+      const grid = document.getElementById('cardsGrid');
+      grid.innerHTML = '';
 
-        <a class="nav-item" href="echange.html">
-            <span style="font-size: 1.5rem;">🔄</span>
-            <span>Échanges</span>
-        </a>
+      inventory.forEach(item => {
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'card-item';
+        cardDiv.innerHTML = `
+          <img src="images/${item.carte_id}.png" alt="Carte ${item.carte_id}" onerror="this.src='images/default.png'">
+          <div class="card-count">x${item.quantite}</div>
+        `;
+        grid.appendChild(cardDiv);
+      });
+    }
 
-        <a class="nav-item" href="404.html">
-            <span style="font-size: 1.5rem;">⚔️</span>
-            <span>Combats</span>
-        </a>
+    // Exemple : ouvrir un pack (tu peux appeler cette fonction depuis un bouton)
+    async function openPack() {
+      const randomCarteId = Math.floor(Math.random() * 200) + 1; // carte entre 1 et 200
+      try {
+        const response = await fetch(`${API_URL}/api/unlock`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, carteId: randomCarteId })
+        });
 
-        <a class="nav-item" href="Paramètres.html">
-            <span style="font-size: 1.5rem;">⚙️</span>
-            <span>Paramètres</span>
-        </a>
-    </nav>
+        if (response.ok) {
+          alert('Nouvelle carte débloquée !');
+          loadInventory(); // recharge l’inventaire
+        } else {
+          alert('Erreur lors de l’ouverture du pack');
+        }
+      } catch (err) {
+        alert('Erreur réseau');
+      }
+    }
 
-    <script src="js/inventaire.js"></script>
+    // Chargement au démarrage
+    loadInventory();
+  </script>
 </body>
 </html>
