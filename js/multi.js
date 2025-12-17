@@ -279,3 +279,44 @@ function finishOpening() {
 function goBack() {
   window.history.back();
 }
+
+
+// Ajout dans la base de données
+async function addCardsToDatabase() {
+  const userId = localStorage.getItem('userId');
+  if (!userId) {
+    console.log('Pas connecté – on utilise userId 1 pour test');
+    // Change 1 par l'ID d'un utilisateur que tu as créé dans la base
+    userId = 1;
+  }
+
+  console.log('Ajout de', allPackCards.length, 'cartes dans la base pour userId', userId);
+
+  for (const card of allPackCards) {
+    try {
+      const response = await fetch('https://tcg-api-378m.onrender.com/api/unlock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, carteId: card.id })
+      });
+      if (response.ok) {
+        console.log('OK :', card.name, '(ID:', card.id, ')');
+      } else {
+        console.error('Erreur API :', await response.text());
+      }
+    } catch (err) {
+      console.error('Erreur réseau', err);
+    }
+  }
+}
+
+// Appelle cette fonction à la fin de addCardsToInventory()
+async function addCardsToInventory() {
+  // ... ton code existant ...
+
+  await addCardsToDatabase(); // <-- AJOUTE CETTE LIGNE
+
+  setTimeout(() => {
+    window.location.href = 'inventaire.html';
+  }, 1000);
+}
