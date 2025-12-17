@@ -1,4 +1,4 @@
-// inventaire.js – version finale avec stockage en base de données
+// inventaire.js – stockage en base de données, visuel 100 % identique
 
 const API_URL = 'https://tcg-api-378m.onrender.com'; // ← TON API
 
@@ -9,7 +9,22 @@ let searchQuery = '';
 let selectedCard = null;
 let currentUserId = null;
 
-// Récupère l'utilisateur connecté depuis la connexion (userId mis par login/register)
+// Éléments DOM (TON CODE D'ORIGINE – INCHANGÉ)
+const cardsGrid = document.getElementById('cardsGrid');
+const emptyState = document.getElementById('emptyState');
+const statSelector = document.getElementById('statSelector');
+const statValue = document.getElementById('statValue');
+const searchInput = document.getElementById('searchInput');
+const cardModal = document.getElementById('cardModal');
+const modalClose = document.getElementById('modalClose');
+const modalCard = document.getElementById('modalCard');
+const modalCardIcon = document.getElementById('modalCardIcon');
+const modalCardName = document.getElementById('modalCardName');
+const modalCardRarity = document.getElementById('modalCardRarity');
+const modalCardCount = document.getElementById('modalCardCount');
+const modalFavoriteBtn = document.getElementById('modalFavoriteBtn');
+
+// Récupère l'utilisateur connecté (depuis la connexion)
 function getCurrentUser() {
   currentUserId = localStorage.getItem('userId');
   if (!currentUserId) {
@@ -25,61 +40,38 @@ function getCurrentUser() {
 async function loadInventoryFromDB() {
   try {
     const response = await fetch(`${API_URL}/api/collection?userId=${currentUserId}`);
-    if (!response.ok) throw new Error('Erreur API');
+    if (!response.ok) throw new Error('Erreur serveur');
     const data = await response.json();
     console.log('📦 Inventaire chargé depuis la base :', data.length, 'cartes');
-    return data; // [{carte_id, quantite}, ...]
+    return data;
   } catch (err) {
-    console.error('Erreur chargement depuis la base', err);
-    alert('Impossible de charger l’inventaire depuis le serveur. Mode local activé en fallback.');
-    return []; // fallback vide si API down
+    console.error('Erreur chargement inventaire', err);
+    alert('Impossible de charger l’inventaire depuis le serveur');
+    return [];
   }
 }
 
-// Sauvegarder une nouvelle carte dans la base
-async function addCardToDB(carteId) {
-  try {
-    const response = await fetch(`${API_URL}/api/unlock`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: currentUserId, carteId })
-    });
-    if (response.ok) {
-      console.log('✅ Carte ajoutée dans la base :', carteId);
-    } else {
-      console.error('Erreur ajout carte');
-    }
-  } catch (err) {
-    console.error('Erreur réseau ajout carte', err);
-  }
-}
-
-// Initialisation – remplace ton initInventory()
+// Initialisation
 async function initInventory() {
   const currentUser = getCurrentUser();
   if (!currentUser) return;
 
   console.log('👤 Utilisateur connecté :', currentUser.name);
 
-  // Charge depuis la base au lieu de localStorage
   inventory = await loadInventoryFromDB();
 
-  // Si vide, tu peux ajouter des cartes de départ (optionnel)
   if (inventory.length === 0) {
-    console.log('📦 Inventaire vide – ajout de cartes de départ');
-    const starterCards = [1, 2, 3, 4, 5]; // exemple
-    for (const id of starterCards) {
-      await addCardToDB(id);
-    }
-    inventory = await loadInventoryFromDB();
+    emptyState.style.display = 'block';
+    cardsGrid.innerHTML = '';
+  } else {
+    emptyState.style.display = 'none';
+    renderCards();
   }
-
-  renderCards(); // ta fonction d'affichage d'origine
 }
 
-// Sauvegarde – plus besoin de localStorage (tout est dans la base)
+// Sauvegarde inutile (tout est dans la base) – on garde pour compatibilité
 function saveInventory() {
-  console.log('✅ Inventaire déjà synchronisé avec la base de données');
+  console.log('✅ Inventaire déjà synchronisé avec la base');
 }
 
 // Trier l'inventaire (TON CODE D'ORIGINE – INCHANGÉ)
@@ -119,9 +111,7 @@ function filterInventory() {
   }
 
   if (searchQuery) {
-    filtered = filtered.filter(card =>
-      card.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    filtered = filtered.filter(card => card.name.toLowerCase().includes(searchQuery.toLowerCase()));
   }
 
   return sortInventory(filtered, currentSort);
@@ -202,7 +192,7 @@ function toggleFavorite(cardId) {
   const card = inventory.find(c => c.id === cardId);
   if (card) {
     card.favorite = !card.favorite;
-    saveInventory(); // même si on n’utilise plus localStorage, on garde la fonction pour compatibilité
+    saveInventory(); // garde pour compatibilité
     renderCards();
   }
 }
@@ -283,12 +273,22 @@ if (searchInput) {
   });
 }
 
-// Fonction d'ouverture de pack (exemple – tu peux l’appeler depuis un bouton)
+// Ouverture de pack (exemple)
 async function openPack() {
   const randomId = Math.floor(Math.random() * 200) + 1;
-  await addCardToDB(randomId);
-  alert('Nouvelle carte débloquée !');
-  loadInventoryFromDB().then(() => renderCards());
+  try {
+    const response = await fetch(`${API_URL}/api/unlock`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUserId, carteId: randomId })
+    });
+    if (response.ok) {
+      alert('Nouvelle carte débloquée !');
+      loadInventoryFromDB().then(() => renderCards());
+    }
+  } catch (err) {
+    alert('Erreur ouverture pack');
+  }
 }
 
 // Démarrage
