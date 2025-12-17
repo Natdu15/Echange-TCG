@@ -1,7 +1,6 @@
-// accueil.js – version corrigée (plus d'erreur getCurrentUser)
+// accueil.js – version 100% sûre (vérifie les éléments avant de les utiliser)
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Récupère l'utilisateur depuis localStorage (comme dans tes autres fichiers)
   const userId = localStorage.getItem('userId');
   const pseudo = localStorage.getItem('pseudo') || localStorage.getItem('userEmail') || 'Joueur';
 
@@ -11,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  console.log('Utilisateur connecté sur accueil :', pseudo, '(ID:', userId, ')');
+  console.log('Utilisateur connecté :', pseudo, '(ID:', userId, ')');
 
   let gameState = {
     pseudo: pseudo,
@@ -28,25 +27,25 @@ document.addEventListener('DOMContentLoaded', () => {
     ]
   };
 
-  // Sauvegarder l'état (dans localStorage pour l'instant)
   function saveGameState() {
-    localStorage.setItem('gameState', JSON.stringify(gameState));
+    localStorage.setItem('gameState_' + userId, JSON.stringify(gameState));
   }
 
-  // Éléments DOM
-  const profileBtn = document.getElementById('profileBtn');
-  const profileDropdown = document.getElementById('profileDropdown');
-  const boosterPacks = document.querySelectorAll('.booster-pack');
-  const openFreeBtn = document.getElementById('openFreeBtn');
-  const openPaidBtn = document.getElementById('openPaidBtn');
-  const cardsReveal = document.getElementById('cardsReveal');
-  const cardsGrid = document.getElementById('cardsGrid');
-  const closeCards = document.getElementById('closeCards');
-  const questsBtn = document.getElementById('questsBtn');
-  const questsPanel = document.getElementById('questsPanel');
+  // Vérifie que l'élément existe avant de l'utiliser
+  const safeGetElement = (id) => document.getElementById(id);
+
+  const profileBtn = safeGetElement('profileBtn');
+  const profileDropdown = safeGetElement('profileDropdown');
+  const openFreeBtn = safeGetElement('openFreeBtn');
+  const openPaidBtn = safeGetElement('openPaidBtn');
+  const questsBtn = safeGetElement('questsBtn');
+  const questsPanel = safeGetElement('questsPanel');
   const navItems = document.querySelectorAll('.nav-item');
 
-  // Timer
+  // Timer – seulement si les éléments existent
+  const timerText = safeGetElement('timerText');
+  const freeBoosters = safeGetElement('freeBoosters');
+
   function formatTime(seconds) {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -62,8 +61,8 @@ document.addEventListener('DOMContentLoaded', () => {
       gameState.timeUntilNextBooster = 12 * 60 * 60;
     }
 
-    document.getElementById('timerText').textContent = formatTime(gameState.timeUntilNextBooster);
-    document.getElementById('freeBoosters').textContent = gameState.freeBoostersLeft;
+    if (timerText) timerText.textContent = formatTime(gameState.timeUntilNextBooster);
+    if (freeBoosters) freeBoosters.textContent = gameState.freeBoostersLeft;
 
     saveGameState();
   }
@@ -72,49 +71,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Update UI
   function updateUI() {
-    document.getElementById('playerGems').textContent = gameState.gems;
-    document.getElementById('dropdownGems').textContent = gameState.gems;
-    document.getElementById('freeBoosters').textContent = gameState.freeBoostersLeft;
+    const playerGems = safeGetElement('playerGems');
+    const dropdownGems = safeGetElement('dropdownGems');
+    if (playerGems) playerGems.textContent = gameState.gems;
+    if (dropdownGems) dropdownGems.textContent = gameState.gems;
+    if (freeBoosters) freeBoosters.textContent = gameState.freeBoostersLeft;
     renderQuests();
     saveGameState();
   }
 
-  // Profile Dropdown
-  if (profileBtn) {
-    profileBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      profileDropdown.classList.toggle('active');
-    });
-  }
-
-  document.addEventListener('click', () => {
-    profileDropdown.classList.remove('active');
-    questsPanel.classList.remove('active');
-  });
-
-  if (profileDropdown) profileDropdown.addEventListener('click', (e) => e.stopPropagation());
-
-  // Quests
-  if (questsBtn) {
-    questsBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      questsPanel.classList.toggle('active');
-    });
-  }
-
-  if (questsPanel) questsPanel.addEventListener('click', (e) => e.stopPropagation());
-
   function renderQuests() {
-    const questsList = document.getElementById('questsList');
+    const questsList = safeGetElement('questsList');
     if (!questsList) return;
     questsList.innerHTML = '';
 
     gameState.quests.forEach(quest => {
       const questItem = document.createElement('div');
       questItem.className = `quest-item ${quest.completed ? 'completed' : ''}`;
-
       const progressPercent = (quest.progress / quest.max) * 100;
-
       questItem.innerHTML = `
         <div class="quest-title">${quest.title}</div>
         <div class="quest-progress">
@@ -128,7 +102,6 @@ document.addEventListener('DOMContentLoaded', () => {
           ${quest.completed ? 'Réclamer' : 'En cours...'}
         </button>
       `;
-
       questsList.appendChild(questItem);
     });
   }
@@ -140,59 +113,52 @@ document.addEventListener('DOMContentLoaded', () => {
       quest.completed = false;
       quest.progress = 0;
       updateUI();
-
-      const gemsDisplay = document.getElementById('playerGems');
-      if (gemsDisplay) {
-        gemsDisplay.style.transform = 'scale(1.3)';
-        gemsDisplay.style.color = '#fbbf24';
-        setTimeout(() => {
-          gemsDisplay.style.transform = 'scale(1)';
-          gemsDisplay.style.color = '';
-        }, 300);
-      }
     }
   };
 
-  // Ouvrir booster (redirection vers le pack)
-  function openBooster(isPaid = false) {
-    if (!isPaid && gameState.freeBoostersLeft <= 0) {
-      alert('Plus de boosters gratuits ! Revenez dans ' + formatTime(gameState.timeUntilNextBooster));
-      return;
-    }
-    if (isPaid && gameState.gems < 100) {
-      alert('Pas assez de Gems ! (100 Gems requis)');
-      return;
-    }
-
-    if (!isPaid) gameState.freeBoostersLeft--;
-    else gameState.gems -= 100;
-
-    updateQuestProgress(2, 1);
-    updateQuestProgress(3, 1);
-    updateUI();
-
-    // Redirection vers le pack (manga-multi ou universite-multi)
-    window.location.href = 'manga-multi.html'; // ou 'universite-multi.html'
-  }
-
-  function updateQuestProgress(questId, amount) {
-    const quest = gameState.quests.find(q => q.id === questId);
-    if (quest && !quest.completed && quest.progress < quest.max) {
-      quest.progress = Math.min(quest.progress + amount, quest.max);
-      if (quest.progress >= quest.max) quest.completed = true;
-    }
-  }
-
-  // Boutons
-  if (openFreeBtn) openFreeBtn.addEventListener('click', () => openBooster(false));
-  if (openPaidBtn) openPaidBtn.addEventListener('click', () => openBooster(true));
-
-  // Fermer les cartes révélées
-  if (closeCards) {
-    closeCards.addEventListener('click', () => {
-      cardsReveal.classList.remove('active');
-      document.body.classList.remove('legendary-bg', 'epic-bg');
+  // Profile Dropdown
+  if (profileBtn && profileDropdown) {
+    profileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      profileDropdown.classList.toggle('active');
     });
+  }
+
+  document.addEventListener('click', () => {
+    if (profileDropdown) profileDropdown.classList.remove('active');
+    if (questsPanel) questsPanel.classList.remove('active');
+  });
+
+  // Quests
+  if (questsBtn && questsPanel) {
+    questsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      questsPanel.classList.toggle('active');
+    });
+  }
+
+  // Ouvrir booster
+  if (openFreeBtn || openPaidBtn) {
+    const openBooster = (isPaid = false) => {
+      if (!isPaid && gameState.freeBoostersLeft <= 0) {
+        alert('Plus de boosters gratuits !');
+        return;
+      }
+      if (isPaid && gameState.gems < 100) {
+        alert('Pas assez de gems !');
+        return;
+      }
+
+      if (!isPaid) gameState.freeBoostersLeft--;
+      else gameState.gems -= 100;
+
+      updateUI();
+
+      window.location.href = 'universite-multi.html'; // ou manga-multi.html
+    };
+
+    if (openFreeBtn) openFreeBtn.addEventListener('click', () => openBooster(false));
+    if (openPaidBtn) openPaidBtn.addEventListener('click', () => openBooster(true));
   }
 
   // Navigation
