@@ -11,58 +11,23 @@
   <div class="background-jeux"></div>
   <div class="container">
     <h2>Créer un compte</h2>
+
     <form id="registerForm">
-      <input type="text" id="username" placeholder="Pseudo" required>
-      <input type="email" id="email" placeholder="Email" required>
-      <input type="password" id="password" placeholder="Mot de passe" required>
-      <input type="password" id="confirmPassword" placeholder="Confirmer le mot de passe" required>
+      <input type="text" id="username" placeholder="Pseudo" required autocomplete="off">
+      <input type="email" id="email" placeholder="Email" required autocomplete="off">
+      <input type="password" id="password" placeholder="Mot de passe" required autocomplete="off">
+      <input type="password" id="confirmPassword" placeholder="Confirmer le mot de passe" required autocomplete="off">
       <button type="submit">S’inscrire</button>
     </form>
-    <p>Déjà un compte ? <a href="index.html">Se connecter</a></p>
+
+    <p style="margin-top: 20px; font-size: 0.9em; color: #aaa;">
+      Déjà un compte ? <a href="index.html">Se connecter</a><br>
+      (tout est stocké dans ton navigateur uniquement)
+    </p>
+
+    <p id="message" style="margin-top: 15px; font-weight: bold; min-height: 1.5em;"></p>
   </div>
 
-  <script>
-    const API_URL = 'https://tcg-api-378m.onrender.com'; // ← TON API EST ICI
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('registerForm');
-      if (!form) return;
-
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const pseudo = document.getElementById('username').value.trim();
-        const email = document.getElementById('email').value.trim().toLowerCase();
-        const password = document.getElementById('password').value;
-        const confirm = document.getElementById('confirmPassword').value;
-
-        if (pseudo.length < 3) return alert('Pseudo trop court (min 3 caractères)');
-        if (password !== confirm) return alert('Les mots de passe ne correspondent pas');
-        if (password.length < 6) return alert('Mot de passe trop court (min 6 caractères)');
-
-        try {
-          const response = await fetch(`${API_URL}/auth/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pseudo, email, mot_de_passe: password })
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-            alert('Compte créé avec succès !');
-            localStorage.setItem('userId', data.userId);
-            localStorage.setItem('pseudo', pseudo);
-            localStorage.setItem('userEmail', email);
-            window.location.href = 'accueil.html'; // ← ta page d'accueil
-          } else {
-            alert(data.error || 'Erreur lors de l’inscription');
-          }
-        } catch (err) {
-          alert('Erreur réseau – réessaie');
-        }
-      });
-    });
-  </script>
+  <script src="js/inscription.js"></script>
 </body>
 </html>
