@@ -11,58 +11,77 @@
   <div class="background-jeux"></div>
   <div class="container">
     <h2>Connexion à Maximus TCG</h2>
+
     <form id="loginForm">
-      <input type="email" id="email" placeholder="Email" required>
-      <input type="password" id="password" placeholder="Mot de passe" required>
-      <button type="submit">Se connecter</button>
+      <input type="email" id="email" placeholder="Email" required autocomplete="off">
+      <input type="password" id="password" placeholder="Mot de passe" required autocomplete="off">
+      <button type="submit">Se connecter / Créer compte</button>
     </form>
-    <p>Pas encore de compte ? <a href="inscription.html">Créer un compte</a></p>
+
+    <p style="margin-top: 20px; font-size: 0.9em; color: #aaa;">
+      Pas de compte ? Utilise simplement le même formulaire !<br>
+      (tout est stocké dans ton navigateur)
+    </p>
+
+    <p id="message" style="margin-top: 15px; font-weight: bold;"></p>
   </div>
 
-  <!-- Script en bas du body pour éviter l'erreur null -->
   <script>
-    const API_URL = 'https://tcg-api-378m.onrender.com'; // ← TON API ICI
-
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('loginForm');
-      if (!form) {
-        console.error('Formulaire login non trouvé');
+      const message = document.getElementById('message');
+
+      const savedEmail = localStorage.getItem('tcg_user_email');
+      if (savedEmail) {
+        message.style.color = '#0f0';
+        message.textContent = `Bienvenue ${savedEmail.split('@')[0]} !`;
+        setTimeout(() => {
+          window.location.href = 'accueil.html';
+        }, 1800);
         return;
       }
 
-      form.addEventListener('submit', async (e) => {
+      form.addEventListener('submit', (e) => {
         e.preventDefault();
 
         const email = document.getElementById('email').value.trim().toLowerCase();
         const password = document.getElementById('password').value;
 
         if (!email || !password) {
-          alert('Tous les champs sont requis');
+          message.style.color = '#ff4444';
+          message.textContent = 'Tous les champs sont requis';
           return;
         }
 
-        try {
-          const response = await fetch(`${API_URL}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, mot_de_passe: password })
-          });
+        const userKey = `tcg_user_${email}`;
+        const existing = localStorage.getItem(userKey);
 
-          const data = await response.json();
-
-          if (data.success) {
-            localStorage.setItem('userId', data.userId);
-            localStorage.setItem('userEmail', email);
-            alert('Connexion réussie ! Bienvenue dans Maximus TCG');
-            window.location.href = 'accueil.html'; // ← ta page d'accueil
+        if (existing) {
+          const user = JSON.parse(existing);
+          if (user.password === password) {
+            localStorage.setItem('tcg_user_email', email);
+            message.style.color = '#0f0';
+            message.textContent = 'Connexion réussie !';
+            setTimeout(() => window.location.href = 'accueil.html', 1200);
           } else {
-            alert(data.error || 'Mauvais email ou mot de passe');
+            message.style.color = '#ff4444';
+            message.textContent = 'Mot de passe incorrect';
           }
-        } catch (err) {
-          alert('Erreur réseau – réessaie dans quelques secondes');
+        } else {
+          const newUser = { email, password, created: new Date().toISOString(), cards: [] };
+          localStorage.setItem(userKey, JSON.stringify(newUser));
+          localStorage.setItem('tcg_user_email', email);
+          message.style.color = '#0f0';
+          message.textContent = 'Compte créé ! Tu es connecté.';
+          setTimeout(() => window.location.href = 'accueil.html', 1500);
         }
       });
     });
+
+    window.logout = function() {
+      localStorage.removeItem('tcg_user_email');
+      window.location.href = 'index.html';
+    };
   </script>
 </body>
 </html>
