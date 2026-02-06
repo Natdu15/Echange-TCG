@@ -1,21 +1,30 @@
-// accueil.js – version 100% sûre (vérifie les éléments avant de les utiliser)
-
 document.addEventListener('DOMContentLoaded', () => {
   const userId = localStorage.getItem('userId');
-  const pseudo = localStorage.getItem('pseudo') || localStorage.getItem('userEmail') || 'Joueur';
+  const userEmail = localStorage.getItem('userEmail') || localStorage.getItem('tcg_user_email');
+  const pseudo = localStorage.getItem('pseudo') || userEmail?.split('@')[0] || 'Joueur Invité';
 
-  if (!userId) {
-    console.log('Pas connecté – redirige vers connexion');
-    window.location.href = 'index.html';
-    return;
+  const statusElement = document.getElementById('status') || document.createElement('p');
+  statusElement.id = 'status';
+  statusElement.style.color = '#ffcc00';
+  statusElement.style.textAlign = 'center';
+  statusElement.style.margin = '20px';
+  document.body.prepend(statusElement);
+
+  if (!userId && !userEmail) {
+    statusElement.textContent = 'Mode invité – pas de sauvegarde persistante';
+    statusElement.style.color = '#ffaa00';
+    // On continue quand même pour tester
+  } else {
+    statusElement.textContent = `Connecté en tant que ${pseudo}`;
+    statusElement.style.color = '#0f0';
   }
 
-  console.log('Utilisateur connecté :', pseudo, '(ID:', userId, ')');
+  console.log('Utilisateur :', pseudo, '(ID/email :', userId || userEmail || 'aucun', ')');
 
   let gameState = {
-    pseudo: pseudo,
+    pseudo,
     level: 1,
-    gems: 100,
+    gems: localStorage.getItem('gems') ? parseInt(localStorage.getItem('gems')) : 100,
     avatar: '🎮',
     freeBoostersLeft: 2,
     timeUntilNextBooster: 12 * 60 * 60,
@@ -28,29 +37,25 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   function saveGameState() {
-    localStorage.setItem('gameState_' + userId, JSON.stringify(gameState));
+    localStorage.setItem('gems', gameState.gems);
+    // Si connecté, on sauvegarde aussi sous userId
+    if (userId) {
+      localStorage.setItem('gameState_' + userId, JSON.stringify(gameState));
+    }
   }
 
-  // Vérifie que l'élément existe avant de l'utiliser
   const safeGetElement = (id) => document.getElementById(id);
 
-  const profileBtn = safeGetElement('profileBtn');
-  const profileDropdown = safeGetElement('profileDropdown');
   const openFreeBtn = safeGetElement('openFreeBtn');
   const openPaidBtn = safeGetElement('openPaidBtn');
-  const questsBtn = safeGetElement('questsBtn');
-  const questsPanel = safeGetElement('questsPanel');
-  const navItems = document.querySelectorAll('.nav-item');
-
-  // Timer – seulement si les éléments existent
   const timerText = safeGetElement('timerText');
   const freeBoosters = safeGetElement('freeBoosters');
 
   function formatTime(seconds) {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${hours}h ${String(minutes).padStart(2, '0')}m ${String(secs).padStart(2, '0')}s`;
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h}h ${m.toString().padStart(2, '0')}m ${s.toString().padStart(2, '0')}s`;
   }
 
   function updateTimer() {
@@ -60,117 +65,60 @@ document.addEventListener('DOMContentLoaded', () => {
       gameState.freeBoostersLeft++;
       gameState.timeUntilNextBooster = 12 * 60 * 60;
     }
-
     if (timerText) timerText.textContent = formatTime(gameState.timeUntilNextBooster);
     if (freeBoosters) freeBoosters.textContent = gameState.freeBoostersLeft;
-
     saveGameState();
   }
 
   setInterval(updateTimer, 1000);
 
-  // Update UI
   function updateUI() {
     const playerGems = safeGetElement('playerGems');
-    const dropdownGems = safeGetElement('dropdownGems');
     if (playerGems) playerGems.textContent = gameState.gems;
-    if (dropdownGems) dropdownGems.textContent = gameState.gems;
     if (freeBoosters) freeBoosters.textContent = gameState.freeBoostersLeft;
-    renderQuests();
     saveGameState();
   }
 
-  function renderQuests() {
-    const questsList = safeGetElement('questsList');
-    if (!questsList) return;
-    questsList.innerHTML = '';
-
-    gameState.quests.forEach(quest => {
-      const questItem = document.createElement('div');
-      questItem.className = `quest-item ${quest.completed ? 'completed' : ''}`;
-      const progressPercent = (quest.progress / quest.max) * 100;
-      questItem.innerHTML = `
-        <div class="quest-title">${quest.title}</div>
-        <div class="quest-progress">
-          <span>${quest.progress}/${quest.max}</span>
-          <div class="progress-bar">
-            <div class="progress-fill" style="width: ${progressPercent}%"></div>
-          </div>
-          <span class="quest-reward">+${quest.reward} 💎</span>
-        </div>
-        <button class="claim-btn" ${!quest.completed ? 'disabled' : ''} onclick="claimQuest(${quest.id})">
-          ${quest.completed ? 'Réclamer' : 'En cours...'}
-        </button>
-      `;
-      questsList.appendChild(questItem);
-    });
-  }
-
-  window.claimQuest = function(questId) {
-    const quest = gameState.quests.find(q => q.id === questId);
-    if (quest && quest.completed) {
-      gameState.gems += quest.reward;
-      quest.completed = false;
-      quest.progress = 0;
-      updateUI();
+  const openBooster = (isPaid = false) => {
+    if (!isPaid && gameState.freeBoostersLeft <= 0) {
+      alert('Plus de boosters gratuits pour le moment ! Attends le timer.');
+      return;
     }
+    if (isPaid && gameState.gems < 100) {
+      alert('Pas assez de gems ! (100 gems requis)');
+      return;
+    }
+
+    if (!isPaid) {
+      gameState.freeBoostersLeft--;
+    } else {
+      gameState.gems -= 100;
+    }
+
+    // Marque la quête "Ouvrir un booster" comme avancée
+    const quest2 = gameState.quests.find(q => q.id === 2);
+    if (quest2 && !quest2.completed) {
+      quest2.progress = (quest2.progress || 0) + 1;
+      if (quest2.progress >= quest2.max) quest2.completed = true;
+    }
+
+    // Même pour la quête 3
+    const quest3 = gameState.quests.find(q => q.id === 3);
+    if (quest3 && !quest3.completed) {
+      quest3.progress = (quest3.progress || 0) + 1;
+      if (quest3.progress >= quest3.max) quest3.completed = true;
+    }
+
+    updateUI();
+
+    // Redirection vers la page d'ouverture de pack
+    window.location.href = 'universite-multi.html'; // ou manga-multi.html selon ton choix
   };
 
-  // Profile Dropdown
-  if (profileBtn && profileDropdown) {
-    profileBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      profileDropdown.classList.toggle('active');
-    });
-  }
-
-  document.addEventListener('click', () => {
-    if (profileDropdown) profileDropdown.classList.remove('active');
-    if (questsPanel) questsPanel.classList.remove('active');
-  });
-
-  // Quests
-  if (questsBtn && questsPanel) {
-    questsBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      questsPanel.classList.toggle('active');
-    });
-  }
-
-  // Ouvrir booster
-  if (openFreeBtn || openPaidBtn) {
-    const openBooster = (isPaid = false) => {
-      if (!isPaid && gameState.freeBoostersLeft <= 0) {
-        alert('Plus de boosters gratuits !');
-        return;
-      }
-      if (isPaid && gameState.gems < 100) {
-        alert('Pas assez de gems !');
-        return;
-      }
-
-      if (!isPaid) gameState.freeBoostersLeft--;
-      else gameState.gems -= 100;
-
-      updateUI();
-
-      window.location.href = 'universite-multi.html'; // ou manga-multi.html
-    };
-
-    if (openFreeBtn) openFreeBtn.addEventListener('click', () => openBooster(false));
-    if (openPaidBtn) openPaidBtn.addEventListener('click', () => openBooster(true));
-  }
-
-  // Navigation
-  navItems.forEach(item => {
-    item.addEventListener('click', () => {
-      navItems.forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
-    });
-  });
+  if (openFreeBtn) openFreeBtn.addEventListener('click', () => openBooster(false));
+  if (openPaidBtn) openPaidBtn.addEventListener('click', () => openBooster(true));
 
   // Initialisation
-  renderQuests();
   updateTimer();
   updateUI();
 });
