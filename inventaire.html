@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TCG Arena - Inventaire</title>
-    <link rel="icon" type="logo-tcg.png" href="logo-tcg.png">
+    <link rel="icon" type="image/png" href="logo-tcg.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/inventaire.css">
     <link rel="stylesheet" href="css/footer.css">
-
 </head>
 <body>
     <!-- Header -->
@@ -30,6 +29,9 @@
         </div>
     </div>
 
+    <!-- Message de statut (ajouté) -->
+    <p id="status" style="text-align:center; margin:15px; font-weight:bold; color:#ffcc00;"></p>
+
     <!-- Filters -->
     <div class="filters-section">
         <div class="filters-content">
@@ -39,7 +41,6 @@
                 <button class="filter-btn" data-sort="rarity">Rareté</button>
                 <button class="filter-btn" data-sort="count">Quantité</button>
             </div>
-            
             <div class="filter-group">
                 <span class="filter-label">Rareté:</span>
                 <button class="filter-btn active" data-rarity="all">Toutes</button>
@@ -48,7 +49,6 @@
                 <button class="filter-btn" data-rarity="legendary">Légendaire</button>
                 <button class="filter-btn" data-rarity="favoris">⭐ Favoris</button>
             </div>
-
             <div class="search-bar">
                 <input type="text" placeholder="Rechercher une carte..." id="searchInput">
                 <i class="fas fa-search"></i>
@@ -62,11 +62,7 @@
             <h1 class="inventory-title">📦 Mon Inventaire</h1>
             <p class="inventory-subtitle" id="inventorySubtitle">Votre collection de cartes</p>
         </div>
-
-        <div class="cards-grid" id="cardsGrid">
-            <!-- Les cartes seront générées ici -->
-        </div>
-
+        <div class="cards-grid" id="cardsGrid"></div>
         <div class="empty-state" id="emptyState" style="display: none;">
             <div class="empty-icon">📭</div>
             <div class="empty-text">Aucune carte trouvée</div>
@@ -96,45 +92,38 @@
 
     <footer>
         <img src="footer.png" alt="Footer TCG Arena" class="footer-image">
-
         <div class="footer-text-content">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <p>TCG Arena - Le jeu de cartes à collectionner ultime. Ouvre des boosters, collectionne des cartes
-                        rares et échange avec d'autres joueurs.</p>
+                    <p>TCG Arena - Le jeu de cartes à collectionner ultime. Ouvre des boosters, collectionne des cartes rares et échange avec d'autres joueurs.</p>
                     <div class="social-icons">
                         <a href="https://discordapp.com/users/Nathan15000." title="Discord">DC</a>
                     </div>
                 </div>
             </div>
-
             <div class="footer-bottom">
-                <p>&copy; 2025/2026 TCG Arena. Tous droits réservés.</p>
+                <p>© 2025/2026 TCG Arena. Tous droits réservés.</p>
             </div>
         </div>
     </footer>
 
     <nav class="bottom-nav">
-        <a class="nav-item active" href="accueil.html">
+        <a class="nav-item" href="accueil.html">
             <span style="font-size: 1.5rem;">🏠</span>
             <span>Accueil</span>
         </a>
-
-        <a class="nav-item" href="inventaire.html">
+        <a class="nav-item active" href="inventaire.html">
             <span style="font-size: 1.5rem;">🎒</span>
             <span>Inventaire</span>
         </a>
-
         <a class="nav-item" href="echange.html">
             <span style="font-size: 1.5rem;">🔄</span>
             <span>Échanges</span>
         </a>
-
         <a class="nav-item" href="404.html">
             <span style="font-size: 1.5rem;">⚔️</span>
             <span>Combats</span>
         </a>
-
         <a class="nav-item" href="Paramètres.html">
             <span style="font-size: 1.5rem;">⚙️</span>
             <span>Paramètres</span>
