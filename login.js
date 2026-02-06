@@ -1,39 +1,37 @@
-document.getElementById("loginForm").addEventListener("submit", async (e) => {
+document.getElementById("loginForm").addEventListener("submit", function(e) {
   e.preventDefault();
 
-  const email = document.getElementById("email").value;
+  const email = document.getElementById("email").value.trim().toLowerCase();
   const password = document.getElementById("password").value;
   const status = document.getElementById("status");
 
   status.textContent = "Connexion...";
+  status.style.color = "yellow";
 
-  try {
-    const response = await fetch("https://TON-BACKEND.onrender.com/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
-    });
+  const userKey = `tcg_user_${email}`;
+  const stored = localStorage.getItem(userKey);
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      status.style.color = "red";
-      status.textContent = data.error;
-      return;
-    }
-
-    localStorage.setItem("user_id", data.user.id);
-    localStorage.setItem("user_email", data.user.email);
-
-    status.style.color = "lime";
-    status.textContent = "Connexion réussie !";
-
-    setTimeout(() => {
-      window.location.href = "inventaire.html";
-    }, 800);
-
-  } catch (err) {
+  if (!stored) {
     status.style.color = "red";
-    status.textContent = "Erreur : " + err.message;
+    status.textContent = "Email inconnu";
+    return;
   }
+
+  const user = JSON.parse(stored);
+
+  if (user.password !== password) {
+    status.style.color = "red";
+    status.textContent = "Mot de passe incorrect";
+    return;
+  }
+
+  localStorage.setItem('tcg_user_email', email);
+  localStorage.setItem('tcg_user_pseudo', user.pseudo);
+
+  status.style.color = "lime";
+  status.textContent = "Connexion réussie !";
+
+  setTimeout(() => {
+    window.location.href = "inventaire.html";
+  }, 800);
 });
